@@ -180,7 +180,7 @@ async function callGemini(base64Image, apiKey) {
   Ensure you calculate the hours accurately based on the start and end times. Ensure you group employees to their correct Roles (Manager, Delivery Expert, etc) based on the section they appear in.`;
 
   // Updated to the active 2026 Gemini model endpoint
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro:generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Image.split(',')[1] } }] }]
   };
