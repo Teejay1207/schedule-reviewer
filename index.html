@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,6 +35,453 @@
     .panel{background:var(--color-surface);border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);border-radius:var(--radius-2xl);box-shadow:var(--shadow-sm)}
     .section-pad{padding:var(--space-5)}
     .brand{display:flex;gap:var(--space-3);align-items:center}
+    .logo{width:44px;height:44px;border-radius:14px;background:var(--color-primary);display:grid;place-items:center;color:#fff}
+    .logo svg{width:24px;height:24px}
+    h1,h2,h3,p{margin:0} .muted{color:var(--color-text-muted)} .tiny{font-size:var(--text-xs)}
+    .topbar{display:flex;justify-content:space-between;gap:var(--space-4);align-items:center;flex-wrap:wrap}
+    .btn,.field,.select{min-height:46px;border-radius:var(--radius-lg);border:1px solid color-mix(in srgb,var(--color-text) 12%,transparent);background:var(--color-surface);padding:0 var(--space-4); font-weight: 500;}
+    .btn.primary{background:var(--color-primary);color:var(--color-text-inverse);border-color:transparent}
+    .upload-btn{width:100%;display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:var(--radius-lg);background:var(--color-primary);color:var(--color-text-inverse);font-weight:700}
+    .upload-btn input{display:none}
+    .metrics{display:grid;gap:var(--space-3)}
+    .metric{background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4)}
+    .metric strong{display:block;font-size:var(--text-lg)}
+    .hero{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-6)}
+    .dropzone{min-height:200px;border-radius:22px;border:1.5px dashed var(--color-primary);background:color-mix(in srgb,var(--color-primary) 4%,var(--color-surface-offset));display:grid;place-items:center;padding:var(--space-5);overflow:hidden; text-align:center;}
+    .preview-wrap{display:none;width:100%} .preview-wrap.active{display:block}
+    .preview-image{width:100%;border-radius:18px;max-height:400px;object-fit:contain}
+    .toolbar{display:flex;flex-wrap:wrap;gap:var(--space-3)} .field{flex:1 1 260px}
+    .days{display:grid;gap:var(--space-4)}
+    .day-card{background:var(--color-surface-2);border-radius:20px;border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);padding:var(--space-4)}
+    .day-head{display:flex;justify-content:space-between}
+    .timeline{display:grid;gap:var(--space-3);margin-top:var(--space-3)}
+    .shift{padding:var(--space-3);background:var(--color-surface-offset);border-radius:16px;border-left:4px solid var(--accent,var(--color-primary))}
+    .employee{font-weight:700} .time{font-size:var(--text-sm);font-weight:700}
+    .table-wrap{overflow:auto;border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);border-radius:18px}
+    table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+    th,td{padding:var(--space-3);text-align:left;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)}
+    th{background:var(--color-surface-offset)}
+    .status{display:inline-flex;align-items:center;gap:var(--space-2);min-height:36px;border-radius:var(--radius-full);background:var(--color-surface-offset);padding:0 var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--color-success)}
+    .badge{display:inline-flex;align-items:center;gap:var(--space-2);min-height:36px;border-radius:var(--radius-full);padding:0 var(--space-3);background:color-mix(in srgb,var(--color-primary) 9%,var(--color-surface-offset));color:var(--color-primary);font-size:var(--text-xs)}
+    .note-box{min-height:180px;white-space:pre-wrap;background:var(--color-surface-offset);border-radius:18px;border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);padding:var(--space-4);overflow:auto}
+    input.field{width:100%}
+    @media (max-width:1100px){.app{grid-template-columns:1fr}}
+
+    /* Hidden Export Container styling */
+    #exportContainer { position: absolute; left: -9999px; top: -9999px; width: 600px; padding: 32px; background: #fff; color: #111; font-family: 'Satoshi', sans-serif; border-radius: 24px; }
+    .export-card { background: #f9f8f5; border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 1px solid #e5e3db; display: flex; justify-content: space-between; align-items: center; }
+    .export-name { font-weight: 800; font-size: 1.25rem; margin-bottom: 4px; }
+    .export-role { font-size: 0.9rem; color: #67655f; font-weight: 500; }
+    .export-hours { font-weight: 900; font-size: 1.5rem; color: #01696f; background: #cedcd8; padding: 8px 16px; border-radius: 12px; }
+    .export-header { margin-bottom: 24px; border-bottom: 2px solid #e5e3db; padding-bottom: 16px; }
+
+    /* Custom styles for details summary toggle */
+    details > summary { cursor: pointer; display: flex; align-items: center; user-select: none; outline: none; }
+    details > summary::-webkit-details-marker { display: none; } /* Hide default arrow in webkit */
+    details > summary .toggle-icon { margin-left: auto; font-weight: bold; font-size: 1.2rem; transition: transform 0.2s; }
+    details[open] > summary .toggle-icon { transform: rotate(45deg); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div><h1>ShiftScope</h1><p class="tiny muted">AI Vision powered reviewer.</p></div>
+    </div>
+
+    <section class="panel section-pad">
+      <h3 style="font-size:var(--text-sm);margin-bottom:var(--space-2)">Gemini API Key</h3>
+      <p class="tiny muted" style="margin-bottom:var(--space-3)">Required for image parsing. Saved locally.</p>
+      <input id="apiKeyInput" class="field" type="password" placeholder="AIzaSy..." style="margin-bottom:var(--space-3)">
+      
+      <div style="display:flex; gap: 8px;">
+        <label class="upload-btn" for="fileInput" style="flex: 1;">Upload image<input id="fileInput" type="file" accept="image/*" /></label>
+        <button id="clearBtn" class="btn" type="button" style="display: none; padding: 0 16px;" title="Clear saved schedule">🗑️</button>
+      </div>
+    </section>
+
+    <section class="panel section-pad">
+      <h3 style="font-size:var(--text-sm);text-transform:uppercase;letter-spacing:.08em" class="muted">Overview</h3>
+      <div class="metrics" style="margin-top:var(--space-4)">
+        <div class="metric"><strong id="metricEmployees">0</strong><span class="tiny muted">Employees</span></div>
+        <div class="metric"><strong id="metricShifts">0</strong><span class="tiny muted">Shifts</span></div>
+        <div class="metric"><strong id="metricHours">0h</strong><span class="tiny muted">Scheduled hours</span></div>
+      </div>
+    </section>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h2 style="font-size:var(--text-xl);line-height:1.05;font-weight:900">Schedule reviewer</h2>
+      </div>
+      <div class="actions" style="display: flex; gap: 12px;">
+        <button id="exportBtn" class="btn primary" type="button" style="display: none;">Save as Image</button>
+        <button id="themeBtn" class="btn" type="button">Dark mode</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="panel section-pad">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4)">
+          <h3 style="font-size:var(--text-lg);font-weight:800">Vision Parsing</h3>
+          <div class="badge" id="statusBadge">Ready</div>
+        </div>
+        <div id="dropzone" class="dropzone">
+          <div id="dropText">
+            <strong style="display:block;font-size:var(--text-lg)">Select an image</strong>
+            <span class="tiny muted">No schedule loaded</span>
+          </div>
+          <div id="previewWrap" class="preview-wrap">
+            <img id="previewImage" class="preview-image" alt="Uploaded schedule" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <!-- Search input updated placeholder to hint at multiple searching -->
+      <input id="searchInput" class="field" type="search" placeholder="Filter employee, role, or day (use commas for multiple)" />
+    </section>
+
+    <div class="panel section-pad">
+        <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-4)">
+          <h3 style="font-size:var(--text-lg);font-weight:800">Weekly Total Hours</h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Employee</th><th>Primary Role</th><th>Total Hours</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+    </div>
+
+    <div class="panel section-pad">
+        <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-4)">
+          <h3 style="font-size:var(--text-lg);font-weight:800">Day-by-day view</h3>
+        </div>
+        <div id="days" class="days"></div>
+    </div>
+
+    <!-- Raw Data Section wrapped in a native HTML5 <details> element so it's collapsible -->
+    <details class="panel section-pad">
+        <summary>
+            <h3 style="font-size:var(--text-lg);font-weight:800; display: inline;">Raw JSON Response</h3>
+            <span class="tiny muted" style="margin-left: 8px;">(Click to expand)</span>
+            <span class="toggle-icon">+</span>
+        </summary>
+        <div style="margin-top: var(--space-4);">
+            <p class="tiny muted" style="margin-bottom:var(--space-2)">See exactly what the AI extracted</p>
+            <div id="rawText" class="note-box" style="font-family:monospace; font-size: 13px;">No data yet.</div>
+        </div>
+    </details>
+  </main>
+</div>
+
+<!-- Hidden container used for exporting the image -->
+<div id="exportContainer"></div>
+
+<script>
+const state = {
+  theme: 'light', processing: false, search: '', shifts: [], title: '', meta: '',
+  roleColors: {'Manager':'#01696f','Delivery Expert':'#006494','CSR':'#437a22','Cook':'#964219','Driver':'#7a39bb','Unknown':'#7a7974'}
+};
+const daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const $ = id => document.getElementById(id);
+const els = {
+  fileInput:$('fileInput'), dropzone:$('dropzone'), dropText:$('dropText'), previewWrap:$('previewWrap'), previewImage:$('previewImage'),
+  statusBadge:$('statusBadge'), metricEmployees:$('metricEmployees'), metricShifts:$('metricShifts'), metricHours:$('metricHours'),
+  searchInput:$('searchInput'), days:$('days'), tableBody:$('tableBody'), rawText:$('rawText'), themeBtn:$('themeBtn'), apiKeyInput:$('apiKeyInput'), exportBtn:$('exportBtn'), exportContainer:$('exportContainer'), clearBtn:$('clearBtn')
+};
+
+// --- API Logic ---
+async function callGemini(base64Image, apiKey) {
+  const prompt = `You are an expert data extraction assistant. Analyze this work schedule image. 
+  Extract the store title, dates, and all shifts.
+  
+  CRITICAL INSTRUCTIONS FOR ABBREVIATIONS:
+  - 'DE' means 'Delivery Expert'. If a shift has (DE) or DE, their role for that shift is Delivery Expert.
+  - 'C' means 'Close'. If you see 'C' or '- C' on a shift time, append ' (Close)' to their end time.
+  - 'O' means 'Open'. If you see 'O' or '- O' on a shift time, append ' (Open)' to their start time.
+  
+  Calculate the hours accurately based on the numerical times provided.
+  Return ONLY a valid, minified JSON object with no markdown formatting, no code blocks, and no extra text.
+  Structure it exactly like this:
+  {
+    "title": "Store 3044 Weekly Schedule",
+    "meta": "8/3/2026 - 8/9/2026",
+    "shifts": [
+      {"employee": "Lander, Jennifer", "role": "Manager", "day": "Tuesday", "start": "4:00 PM", "end": "12:30 AM (Close)", "hours": 8.5}
+    ]
+  }`;
+
+  const payload = {
+    contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Image.split(',')[1] } }] }]
+  };
+
+  const modelsToTry = ['gemini-flash-latest', 'gemini-3.5-flash', 'gemini-pro-latest', 'gemini-3.1-pro'];
+  let lastError = "";
+
+  for (const model of modelsToTry) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        updateStatus(`Connecting to ${model}... (${attempt}/3)`);
+        
+        const response = await fetch(url, {
+          method: "POST", 
+          headers: { "Content-Type": "application/json" }, 
+          body: JSON.stringify(payload) 
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const textResponse = data.candidates[0].content.parts[0].text;
+          const jsonMatch = textResponse.match(/{[sS]*}/);
+          if (!jsonMatch) throw new Error("Failed to extract JSON.");
+          return JSON.parse(jsonMatch[0]);
+        }
+
+        if (response.status === 503 || response.status === 429 || response.status === 500) {
+          lastError = `API Error: ${response.status} (Google Servers Busy)`;
+          await new Promise(resolve => setTimeout(resolve, attempt * 2000));
+          continue; 
+        } else {
+          lastError = `API Error: ${response.status} (${response.statusText})`;
+          break; 
+        }
+
+      } catch (err) {
+        lastError = err.message;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+  }
+  throw new Error(`All Gemini models failed. Last issue: ${lastError}`);
+}
+
+// --- UI Logic ---
+function escapeHtml(v){ return String(v ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function roleColor(role){ return state.roleColors[role] || '#7a7974'; }
+
+function updateStatus(text, type='idle') {
+  els.statusBadge.textContent = text;
+  els.statusBadge.style.color = type === 'error' ? 'var(--color-error)' : type === 'success' ? 'var(--color-primary)' : '';
+}
+
+function render() {
+  // New Multi-Term Search Logic
+  const rawSearch = state.search.trim().toLowerCase();
+  // Split by commas, trim whitespace, and ignore empty strings
+  const searchTerms = rawSearch.split(',').map(t => t.trim()).filter(Boolean);
+
+  const visible = state.shifts.filter(s => {
+    if (searchTerms.length === 0) return true; // Show all if no search query
+    
+    const bag = `${s.employee} ${s.role} ${s.day}`.toLowerCase();
+    // Use .some() so it acts as an OR filter - matches if any of the comma-separated terms match
+    return searchTerms.some(term => bag.includes(term));
+  });
+
+  // Show/Hide Clear Button
+  els.clearBtn.style.display = state.shifts.length > 0 ? 'block' : 'none';
+
+  // Calculate Total Hours per Employee
+  const employeeTotals = {};
+  visible.forEach(shift => {
+    if (!employeeTotals[shift.employee]) {
+        employeeTotals[shift.employee] = { role: shift.role, hours: 0 };
+    }
+    employeeTotals[shift.employee].hours += Number(shift.hours || 0);
+  });
+
+  const sortedEmployees = Object.keys(employeeTotals).sort();
+
+  // Update Metrics
+  const totalHours = sortedEmployees.reduce((sum, emp) => sum + employeeTotals[emp].hours, 0);
+  els.metricEmployees.textContent = sortedEmployees.length;
+  els.metricShifts.textContent = visible.length;
+  els.metricHours.textContent = totalHours.toFixed(1) + 'h';
+
+  // Day Cards
+  els.days.innerHTML = '';
+  daysOfWeek.forEach(day => {
+    const dayShifts = visible.filter(s => s.day === day);
+    if (!dayShifts.length) return;
+    
+    const card = document.createElement('div'); card.className = 'day-card';
+    card.innerHTML = `<div class="day-head"><strong style="font-size:1.1rem">${day}</strong><span class="muted">${dayShifts.reduce((a,b)=>a+Number(b.hours),0)} hrs</span></div>`;
+    const timeline = document.createElement('div'); timeline.className = 'timeline';
+    
+    dayShifts.forEach(shift => {
+      const item = document.createElement('div'); item.className = 'shift';
+      item.style.setProperty('--accent', roleColor(shift.role));
+      item.innerHTML = `
+        <div style="display:flex; justify-content:space-between">
+          <div><div class="employee">${escapeHtml(shift.employee)}</div><div class="tiny muted">${escapeHtml(shift.role)}</div></div>
+          <div style="text-align:right"><div class="time">${escapeHtml(shift.start)} - ${escapeHtml(shift.end)}</div><div class="tiny muted">${shift.hours} hrs</div></div>
+        </div>`;
+      timeline.appendChild(item);
+    });
+    card.appendChild(timeline);
+    els.days.appendChild(card);
+  });
+
+  // Total Hours Table
+  els.tableBody.innerHTML = sortedEmployees.length ? '' : '<tr><td colspan="3" style="text-align:center">No shifts</td></tr>';
+  sortedEmployees.forEach(emp => {
+    const data = employeeTotals[emp];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${escapeHtml(emp)}</strong></td><td>${escapeHtml(data.role)}</td><td>${data.hours.toFixed(1)} hrs</td>`;
+    els.tableBody.appendChild(tr);
+  });
+
+  // Render Export Container
+  if (sortedEmployees.length > 0) {
+      els.exportBtn.style.display = 'block';
+      let exportHtml = `
+        <div class="export-header">
+            <h1 style="margin: 0; font-size: 2rem;">Weekly Hours Summary</h1>
+            <p style="margin: 4px 0 0 0; color: #67655f; font-size: 1.1rem;">${escapeHtml(state.title)} &bull; ${escapeHtml(state.meta)}</p>
+        </div>
+      `;
+      sortedEmployees.forEach(emp => {
+          exportHtml += `
+            <div class="export-card">
+                <div>
+                    <div class="export-name">${escapeHtml(emp)}</div>
+                    <div class="export-role">${escapeHtml(employeeTotals[emp].role)}</div>
+                </div>
+                <div class="export-hours">${employeeTotals[emp].hours.toFixed(1)} hrs</div>
+            </div>
+          `;
+      });
+      els.exportContainer.innerHTML = exportHtml;
+  } else {
+      els.exportBtn.style.display = 'none';
+  }
+}
+
+// Generate Image Export
+els.exportBtn.addEventListener('click', () => {
+    const originalText = els.exportBtn.textContent;
+    els.exportBtn.textContent = 'Generating...';
+    els.exportBtn.disabled = true;
+
+    domtoimage.toPng(els.exportContainer, { bgcolor: '#ffffff' })
+        .then(function (dataUrl) {
+            const link = document.createElement('a');
+            link.download = 'weekly-hours-summary.png';
+            link.href = dataUrl;
+            link.click();
+        })
+        .catch(function (error) {
+            console.error('Oops, something went wrong!', error);
+            alert("Could not generate image.");
+        })
+        .finally(function () {
+            els.exportBtn.textContent = originalText;
+            els.exportBtn.disabled = false;
+        });
+});
+
+// Process Image
+function processImage(file) {
+  if(!file || state.processing) return;
+  const apiKey = els.apiKeyInput.value.trim();
+  if(!apiKey) return alert("Please enter your Gemini API key first.");
+  
+  localStorage.setItem('shiftscope_api_key', apiKey);
+  state.processing = true;
+  updateStatus("Reading image...");
+  
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = reader.result;
+    els.previewImage.src = base64;
+    els.previewWrap.classList.add('active');
+    els.dropText.style.display = 'none';
+
+    try {
+      updateStatus("AI Parsing...");
+      const result = await callGemini(base64, apiKey);
+      
+      state.shifts = result.shifts || [];
+      state.title = result.title || 'Schedule';
+      state.meta = result.meta || '';
+      els.rawText.textContent = JSON.stringify(result, null, 2);
+      
+      // Save to localStorage so it survives refreshes
+      localStorage.setItem('shiftscope_data', JSON.stringify({
+         title: state.title,
+         meta: state.meta,
+         shifts: state.shifts,
+         raw: els.rawText.textContent
+      }));
+      
+      updateStatus("Complete", "success");
+    } catch(err) {
+      updateStatus("Parse failed", "error");
+      els.rawText.textContent = err.message;
+    } finally {
+      state.processing = false;
+      render();
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+// Clear Data
+els.clearBtn.addEventListener('click', () => {
+   if(confirm('Clear the saved schedule data?')) {
+       localStorage.removeItem('shiftscope_data');
+       state.shifts = [];
+       state.title = '';
+       state.meta = '';
+       els.rawText.textContent = 'No data yet.';
+       els.previewWrap.classList.remove('active');
+       els.dropText.style.display = 'block';
+       els.dropText.innerHTML = '<strong style="display:block;font-size:var(--text-lg)">Select an image</strong><span class="tiny muted">No schedule loaded</span>';
+       updateStatus("Ready");
+       render();
+   }
+});
+
+// Initialization
+els.apiKeyInput.value = localStorage.getItem('shiftscope_api_key') || '';
+
+// Load saved schedule if it exists
+const savedData = localStorage.getItem('shiftscope_data');
+if (savedData) {
+    try {
+        const parsed = JSON.parse(savedData);
+        state.title = parsed.title || '';
+        state.meta = parsed.meta || '';
+        state.shifts = parsed.shifts || [];
+        els.rawText.textContent = parsed.raw || JSON.stringify(parsed, null, 2);
+        
+        els.dropText.innerHTML = '<strong style="display:block;font-size:var(--text-lg);color:var(--color-primary);">Saved schedule loaded</strong><span class="tiny muted">Upload a new image to replace</span>';
+        updateStatus("Loaded from memory", "success");
+        render();
+    } catch(e) {
+        console.error("Could not parse saved schedule data.");
+    }
+}
+
+els.fileInput.addEventListener('change', e => processImage(e.target.files[0]));
+els.searchInput.addEventListener('input', e => { state.search = e.target.value; render(); });
+els.themeBtn.addEventListener('click', () => {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', state.theme);
+});
+</script>
+</body>
+</html>    .brand{display:flex;gap:var(--space-3);align-items:center}
     .logo{width:44px;height:44px;border-radius:14px;background:var(--color-primary);display:grid;place-items:center;color:#fff}
     .logo svg{width:24px;height:24px}
     h1,h2,h3,p{margin:0} .muted{color:var(--color-text-muted)} .tiny{font-size:var(--text-xs)}
