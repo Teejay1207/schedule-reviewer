@@ -1,16 +1,103 @@
-
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShiftScope</title>
-  <meta name="description" content="Static schedule OCR reviewer with self-hosted Tesseract assets for GitHub Pages." />
+  <meta name="description" content="Static schedule OCR reviewer for weekly staff schedules." />
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
   <style>
-    :root,[data-theme="light"]{--text-xs:clamp(.75rem,.7rem + .25vw,.875rem);--text-sm:clamp(.875rem,.8rem + .35vw,1rem);--text-base:clamp(1rem,.95rem + .25vw,1.125rem);--text-lg:clamp(1.125rem,1rem + .75vw,1.45rem);--text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.1rem);--space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-2xl:1.5rem;--radius-full:9999px;--color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;--color-surface-offset:#f3f0ec;--color-border:#d4d1ca;--color-text:#28251d;--color-text-muted:#67655f;--color-text-inverse:#f9f8f4;--color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-highlight:#cedcd8;--color-success:#437a22;--color-warning:#964219;--color-error:#a12c7b;--color-blue:#006494;--color-purple:#7a39bb;--shadow-sm:0 1px 2px rgb(0 0 0 / .06);--shadow-md:0 8px 24px rgb(0 0 0 / .08);--shadow-lg:0 18px 50px rgb(0 0 0 / .14);--font-body:'Satoshi','Inter',sans-serif}
-    [data-theme="dark"]{--color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;--color-surface-offset:#1d1c1a;--color-border:#393836;--color-text:#e2e0db;--color-text-muted:#afaca6;--color-text-inverse:#1a1917;--color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-highlight:#313b3b;--color-success:#6daa45;--color-warning:#bb653b;--color-error:#d163a7;--color-blue:#5591c7;--color-purple:#a86fdf;--shadow-sm:0 1px 2px rgb(0 0 0 / .25);--shadow-md:0 8px 24px rgb(0 0 0 / .35);--shadow-lg:0 18px 50px rgb(0 0 0 / .45)}
-    *{box-sizing:border-box}html{-webkit-text-size-adjust:none;text-size-adjust:none}body{margin:0;min-height:100dvh;background:var(--color-bg);color:var(--color-text);font:400 var(--text-base)/1.5 var(--font-body)}img,canvas,svg{display:block;max-width:100%}button,input,select{font:inherit;color:inherit}button{cursor:pointer}.app{min-height:100dvh;display:grid;grid-template-columns:330px minmax(0,1fr)}.sidebar{padding:var(--space-6);background:linear-gradient(180deg,var(--color-surface),var(--color-surface-offset));border-right:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);display:grid;gap:var(--space-6);align-content:start}.main{padding:var(--space-6);display:grid;gap:var(--space-6);min-width:0}.panel{background:var(--color-surface);border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);border-radius:var(--radius-2xl);box-shadow:var(--shadow-sm)}.section-pad{padding:var(--space-5)}.brand{display:flex;gap:var(--space-3);align-items:center}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--color-primary),color-mix(in srgb,var(--color-primary) 55%,white));display:grid;place-items:center;color:#fff;box-shadow:var(--shadow-md)}.logo svg{width:24px;height:24px}h1,h2,h3,h4,p{margin:0}.muted{color:var(--color-text-muted)}.tiny{font-size:var(--text-xs)}.topbar{display:flex;justify-content:space-between;gap:var(--space-4);align-items:center;flex-wrap:wrap}.actions{display:flex;gap:var(--space-3);flex-wrap:wrap}.btn,.field,.select{min-height:46px;border-radius:var(--radius-lg);border:1px solid color-mix(in srgb,var(--color-text) 12%,transparent);background:var(--color-surface);padding:0 var(--space-4)}.btn.primary{background:var(--color-primary);color:var(--color-text-inverse);border-color:transparent}.btn.primary:hover{background:var(--color-primary-hover)}.upload-btn{width:100%;display:inline-flex;align-items:center;justify-content:center;min-height:54px;border-radius:var(--radius-lg);background:var(--color-primary);color:var(--color-text-inverse);font-weight:700}.upload-btn input{display:none}.metrics{display:grid;gap:var(--space-3)}.metric{background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4)}.metric strong{display:block;font-size:var(--text-lg);font-variant-numeric:tabular-nums}.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:var(--space-6)}.dropzone{min-height:360px;border-radius:22px;border:1.5px dashed color-mix(in srgb,var(--color-primary) 30%,var(--color-border));background:color-mix(in srgb,var(--color-primary) 4%,var(--color-surface-offset));display:grid;place-items:center;padding:var(--space-5);overflow:hidden}.dropzone.dragging{border-color:var(--color-primary);background:color-mix(in srgb,var(--color-primary) 8%,var(--color-surface-offset))}.preview-wrap{display:none;width:100%;gap:var(--space-4)}.preview-wrap.active{display:grid}.preview-image{width:100%;border-radius:18px;background:var(--color-surface-offset);object-fit:contain;max-height:540px}.ocr-canvas{width:100%;border-radius:14px;background:var(--color-surface-offset);border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)}.insights{display:grid;gap:var(--space-4)}.insight{padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-offset)}.toolbar{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}.field{flex:1 1 260px}.chip-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}.chip{min-height:38px;padding:0 var(--space-4);border-radius:var(--radius-full);border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);background:var(--color-surface)}.chip.active{background:var(--color-primary-highlight);color:var(--color-primary);border-color:color-mix(in srgb,var(--color-primary) 25%,transparent)}.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);gap:var(--space-6)}.days{display:grid;gap:var(--space-4)}.day-card{background:var(--color-surface-2);border-radius:20px;border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);padding:var(--space-4)}.day-head,.shift-head{display:flex;justify-content:space-between;gap:var(--space-3);align-items:flex-start}.timeline{display:grid;gap:var(--space-3);margin-top:var(--space-3)}.shift{padding:var(--space-3);background:var(--color-surface-offset);border-radius:16px;border-left:4px solid var(--accent,var(--color-primary))}.employee{font-weight:700}.time{font-size:var(--text-sm);font-weight:700;font-variant-numeric:tabular-nums}.table-wrap{overflow:auto;border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);border-radius:18px}table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}th,td{padding:var(--space-3);text-align:left;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);vertical-align:top}th{background:var(--color-surface-offset);position:sticky;top:0;z-index:1}.note-box{min-height:180px;white-space:pre-wrap;background:var(--color-surface-offset);border-radius:18px;border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);padding:var(--space-4);overflow:auto}.status{display:inline-flex;align-items:center;gap:var(--space-2);min-height:36px;border-radius:var(--radius-full);background:var(--color-surface-offset);padding:0 var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)}.dot{width:8px;height:8px;border-radius:50%;background:var(--color-success)}.legend{display:grid;gap:var(--space-2)}.legend-item{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text-muted)}.swatch{width:12px;height:12px;border-radius:999px}.empty{text-align:center;padding:var(--space-8);color:var(--color-text-muted)}.badge{display:inline-flex;align-items:center;gap:var(--space-2);min-height:36px;border-radius:var(--radius-full);padding:0 var(--space-3);background:color-mix(in srgb,var(--color-primary) 9%,var(--color-surface-offset));color:var(--color-primary);font-size:var(--text-xs)}.range-wrap{display:grid;gap:var(--space-2)}.range-head{display:flex;justify-content:space-between;gap:var(--space-2)}input[type="range"]{width:100%;accent-color:var(--color-primary)}.warn{color:var(--color-warning)}.success{color:var(--color-success}.mono{font-variant-numeric:tabular-nums}@media (max-width:1100px){.app{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid color-mix(in srgb,var(--color-text) 10%,transparent)}.hero,.grid{grid-template-columns:1fr}}@media (max-width:720px){.sidebar,.main{padding:var(--space-4)}.actions,.toolbar{width:100%}.btn,.field,.select{width:100%}.day-head,.shift-head{flex-direction:column}}
+    :root,[data-theme="light"]{
+      --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);
+      --text-sm:clamp(.875rem,.8rem + .35vw,1rem);
+      --text-base:clamp(1rem,.95rem + .25vw,1.125rem);
+      --text-lg:clamp(1.125rem,1rem + .75vw,1.45rem);
+      --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.1rem);
+      --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;
+      --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-2xl:1.5rem;--radius-full:9999px;
+      --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;--color-surface-offset:#f3f0ec;--color-border:#d4d1ca;
+      --color-text:#28251d;--color-text-muted:#67655f;--color-text-inverse:#f9f8f4;
+      --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-highlight:#cedcd8;
+      --color-success:#437a22;--color-warning:#964219;--color-error:#a12c7b;--color-blue:#006494;--color-purple:#7a39bb;
+      --shadow-sm:0 1px 2px rgb(0 0 0 / .06);--shadow-md:0 8px 24px rgb(0 0 0 / .08);--shadow-lg:0 18px 50px rgb(0 0 0 / .14);
+      --font-body:'Satoshi','Inter',sans-serif
+    }
+    [data-theme="dark"]{
+      --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;--color-surface-offset:#1d1c1a;--color-border:#393836;
+      --color-text:#e2e0db;--color-text-muted:#afaca6;--color-text-inverse:#1a1917;
+      --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-highlight:#313b3b;
+      --color-success:#6daa45;--color-warning:#bb653b;--color-error:#d163a7;--color-blue:#5591c7;--color-purple:#a86fdf;
+      --shadow-sm:0 1px 2px rgb(0 0 0 / .25);--shadow-md:0 8px 24px rgb(0 0 0 / .35);--shadow-lg:0 18px 50px rgb(0 0 0 / .45)
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:none;text-size-adjust:none}
+    body{margin:0;min-height:100dvh;background:var(--color-bg);color:var(--color-text);font:400 var(--text-base)/1.5 var(--font-body)}
+    img,canvas,svg{display:block;max-width:100%}
+    button,input,select{font:inherit;color:inherit}
+    button{cursor:pointer}
+    .app{min-height:100dvh;display:grid;grid-template-columns:330px minmax(0,1fr)}
+    .sidebar{padding:var(--space-6);background:linear-gradient(180deg,var(--color-surface),var(--color-surface-offset));border-right:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);display:grid;gap:var(--space-6);align-content:start}
+    .main{padding:var(--space-6);display:grid;gap:var(--space-6);min-width:0}
+    .panel{background:var(--color-surface);border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);border-radius:var(--radius-2xl);box-shadow:var(--shadow-sm)}
+    .section-pad{padding:var(--space-5)}
+    .brand{display:flex;gap:var(--space-3);align-items:center}
+    .logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--color-primary),color-mix(in srgb,var(--color-primary) 55%,white));display:grid;place-items:center;color:#fff;box-shadow:var(--shadow-md)}
+    .logo svg{width:24px;height:24px}
+    h1,h2,h3,h4,p{margin:0}
+    .muted{color:var(--color-text-muted)}
+    .tiny{font-size:var(--text-xs)}
+    .topbar{display:flex;justify-content:space-between;gap:var(--space-4);align-items:center;flex-wrap:wrap}
+    .actions{display:flex;gap:var(--space-3);flex-wrap:wrap}
+    .btn,.field,.select{min-height:46px;border-radius:var(--radius-lg);border:1px solid color-mix(in srgb,var(--color-text) 12%,transparent);background:var(--color-surface);padding:0 var(--space-4)}
+    .btn.primary{background:var(--color-primary);color:var(--color-text-inverse);border-color:transparent}
+    .btn.primary:hover{background:var(--color-primary-hover)}
+    .upload-btn{width:100%;display:inline-flex;align-items:center;justify-content:center;min-height:54px;border-radius:var(--radius-lg);background:var(--color-primary);color:var(--color-text-inverse);font-weight:700}
+    .upload-btn input{display:none}
+    .metrics{display:grid;gap:var(--space-3)}
+    .metric{background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4)}
+    .metric strong{display:block;font-size:var(--text-lg);font-variant-numeric:tabular-nums}
+    .hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:var(--space-6)}
+    .dropzone{min-height:360px;border-radius:22px;border:1.5px dashed color-mix(in srgb,var(--color-primary) 30%,var(--color-border));background:color-mix(in srgb,var(--color-primary) 4%,var(--color-surface-offset));display:grid;place-items:center;padding:var(--space-5);overflow:hidden}
+    .dropzone.dragging{border-color:var(--color-primary);background:color-mix(in srgb,var(--color-primary) 8%,var(--color-surface-offset))}
+    .preview-wrap{display:none;width:100%;gap:var(--space-4)}
+    .preview-wrap.active{display:grid}
+    .preview-image{width:100%;border-radius:18px;background:var(--color-surface-offset);object-fit:contain;max-height:540px}
+    .ocr-canvas{width:100%;border-radius:14px;background:var(--color-surface-offset);border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)}
+    .insights{display:grid;gap:var(--space-4)}
+    .insight{padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-offset)}
+    .toolbar{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+    .field{flex:1 1 260px}
+    .chip-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+    .chip{min-height:38px;padding:0 var(--space-4);border-radius:var(--radius-full);border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);background:var(--color-surface)}
+    .chip.active{background:var(--color-primary-highlight);color:var(--color-primary);border-color:color-mix(in srgb,var(--color-primary) 25%,transparent)}
+    .grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);gap:var(--space-6)}
+    .days{display:grid;gap:var(--space-4)}
+    .day-card{background:var(--color-surface-2);border-radius:20px;border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);padding:var(--space-4)}
+    .day-head,.shift-head{display:flex;justify-content:space-between;gap:var(--space-3);align-items:flex-start}
+    .timeline{display:grid;gap:var(--space-3);margin-top:var(--space-3)}
+    .shift{padding:var(--space-3);background:var(--color-surface-offset);border-radius:16px;border-left:4px solid var(--accent,var(--color-primary))}
+    .employee{font-weight:700}
+    .time{font-size:var(--text-sm);font-weight:700;font-variant-numeric:tabular-nums}
+    .table-wrap{overflow:auto;border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);border-radius:18px}
+    table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+    th,td{padding:var(--space-3);text-align:left;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);vertical-align:top}
+    th{background:var(--color-surface-offset);position:sticky;top:0;z-index:1}
+    .note-box{min-height:180px;white-space:pre-wrap;background:var(--color-surface-offset);border-radius:18px;border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);padding:var(--space-4);overflow:auto}
+    .status{display:inline-flex;align-items:center;gap:var(--space-2);min-height:36px;border-radius:var(--radius-full);background:var(--color-surface-offset);padding:0 var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--color-success)}
+    .legend{display:grid;gap:var(--space-2)}
+    .legend-item{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text-muted)}
+    .swatch{width:12px;height:12px;border-radius:999px}
+    .empty{text-align:center;padding:var(--space-8);color:var(--color-text-muted)}
+    .badge{display:inline-flex;align-items:center;gap:var(--space-2);min-height:36px;border-radius:var(--radius-full);padding:0 var(--space-3);background:color-mix(in srgb,var(--color-primary) 9%,var(--color-surface-offset));color:var(--color-primary);font-size:var(--text-xs)}
+    .range-wrap{display:grid;gap:var(--space-2)}
+    .range-head{display:flex;justify-content:space-between;gap:var(--space-2)}
+    input[type="range"]{width:100%;accent-color:var(--color-primary)}
+    .warn{color:var(--color-warning)}
+    .success{color:var(--color-success)}
+    .mono{font-variant-numeric:tabular-nums}
+    @media (max-width:1100px){.app{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid color-mix(in srgb,var(--color-text) 10%,transparent)}.hero,.grid{grid-template-columns:1fr}}
+    @media (max-width:720px){.sidebar,.main{padding:var(--space-4)}.actions,.toolbar{width:100%}.btn,.field,.select{width:100%}.day-head,.shift-head{flex-direction:column}}
   </style>
 </head>
 <body>
@@ -20,12 +107,14 @@
       <div class="logo" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="3"></rect><path d="M8 3v4M16 3v4M4 10h16"></path><path d="M8 14h3M13 14h3"></path></svg>
       </div>
-      <div><h1>ShiftScope</h1><p class="tiny muted">Self-hosted Tesseract build for GitHub Pages.</p></div>
+      <div><h1>ShiftScope</h1><p class="tiny muted">Browser OCR schedule reviewer.</p></div>
     </div>
+
     <section class="panel section-pad">
       <label class="upload-btn" for="fileInput">Upload schedule image<input id="fileInput" type="file" accept="image/*" /></label>
-      <p class="tiny muted" style="margin-top:var(--space-3)">This version includes local Tesseract paths instead of depending on opaque defaults.</p>
+      <p class="tiny muted" style="margin-top:var(--space-3)">This version uses the Tesseract CDN for the OCR engine to avoid broken GitHub Pages worker paths.</p>
     </section>
+
     <section class="panel section-pad">
       <h3 style="font-size:var(--text-sm);text-transform:uppercase;letter-spacing:.08em" class="muted">Overview</h3>
       <div class="metrics" style="margin-top:var(--space-4)">
@@ -34,83 +123,621 @@
         <div class="metric"><strong id="metricHours">0h</strong><span class="tiny muted">Scheduled hours</span></div>
       </div>
     </section>
+
     <section class="panel section-pad">
       <h3 style="font-size:var(--text-sm);text-transform:uppercase;letter-spacing:.08em" class="muted">OCR tuning</h3>
-      <div class="range-wrap" style="margin-top:var(--space-4)"><div class="range-head tiny muted"><span>Contrast boost</span><output id="contrastOut">165%</output></div><input id="contrastRange" type="range" min="100" max="260" step="5" value="165" /></div>
-      <div class="range-wrap" style="margin-top:var(--space-4)"><div class="range-head tiny muted"><span>Sharpen pass</span><output id="sharpenOut">On</output></div><input id="sharpenRange" type="range" min="0" max="1" step="1" value="1" /></div>
+      <div class="range-wrap" style="margin-top:var(--space-4)">
+        <div class="range-head tiny muted"><span>Contrast boost</span><output id="contrastOut">165%</output></div>
+        <input id="contrastRange" type="range" min="100" max="260" step="5" value="165" />
+      </div>
+      <div class="range-wrap" style="margin-top:var(--space-4)">
+        <div class="range-head tiny muted"><span>Threshold</span><output id="thresholdOut">170</output></div>
+        <input id="thresholdRange" type="range" min="120" max="220" step="5" value="170" />
+      </div>
     </section>
-    <section class="panel section-pad"><h3 style="font-size:var(--text-sm);text-transform:uppercase;letter-spacing:.08em" class="muted">Role colors</h3><div id="legend" class="legend" style="margin-top:var(--space-3)"></div></section>
+
+    <section class="panel section-pad">
+      <h3 style="font-size:var(--text-sm);text-transform:uppercase;letter-spacing:.08em" class="muted">Role colors</h3>
+      <div id="legend" class="legend" style="margin-top:var(--space-3)"></div>
+    </section>
   </aside>
+
   <main class="main">
     <div class="topbar">
-      <div><h2 style="font-size:var(--text-xl);line-height:1.05;font-weight:900">Schedule reviewer</h2><p class="muted">Includes bundled Tesseract paths so GitHub Pages can load worker and language files predictably.</p></div>
-      <div class="actions"><button id="themeBtn" class="btn" type="button">Dark mode</button><button id="sampleBtn" class="btn primary" type="button">Load working demo</button></div>
+      <div>
+        <h2 style="font-size:var(--text-xl);line-height:1.05;font-weight:900">Schedule reviewer</h2>
+        <p class="muted">Upload a screenshot, run OCR, then review the parsed shifts in a cleaner layout.</p>
+      </div>
+      <div class="actions">
+        <button id="themeBtn" class="btn" type="button">Dark mode</button>
+        <button id="sampleBtn" class="btn primary" type="button">Load working demo</button>
+      </div>
     </div>
+
     <section class="hero">
       <div class="panel section-pad">
-        <div style="display:flex;justify-content:space-between;gap:var(--space-3);align-items:center;flex-wrap:wrap"><div><h3 style="font-size:var(--text-lg);font-weight:800">Original image</h3><p class="muted tiny">Drop a screenshot or photo. The app shows the original and OCR-ready version.</p></div><div class="badge" id="workerBadge">OCR engine idle</div></div>
-        <div id="dropzone" class="dropzone" style="margin-top:var(--space-5)"><div id="dropText" style="text-align:center;max-width:38ch"><strong style="display:block;font-size:var(--text-lg)">Drop image here</strong><p class="muted" style="margin-top:var(--space-2)">JPG, PNG, or WEBP. Cropped screenshots usually parse best.</p></div><div id="previewWrap" class="preview-wrap"><img id="previewImage" class="preview-image" alt="Uploaded schedule" /><div><p class="tiny muted" style="margin-bottom:var(--space-2)">OCR-ready preview</p><canvas id="processedCanvas" class="ocr-canvas"></canvas></div></div></div>
+        <div style="display:flex;justify-content:space-between;gap:var(--space-3);align-items:center;flex-wrap:wrap">
+          <div>
+            <h3 style="font-size:var(--text-lg);font-weight:800">Original image</h3>
+            <p class="muted tiny">Drop a screenshot or photo. The app shows the original and OCR-ready version.</p>
+          </div>
+          <div class="badge" id="workerBadge">OCR engine idle</div>
+        </div>
+        <div id="dropzone" class="dropzone" style="margin-top:var(--space-5)">
+          <div id="dropText" style="text-align:center;max-width:38ch">
+            <strong style="display:block;font-size:var(--text-lg)">Drop image here</strong>
+            <p class="muted" style="margin-top:var(--space-2)">JPG, PNG, or WEBP. Cropped screenshots usually parse best.</p>
+          </div>
+          <div id="previewWrap" class="preview-wrap">
+            <img id="previewImage" class="preview-image" alt="Uploaded schedule" />
+            <div>
+              <p class="tiny muted" style="margin-bottom:var(--space-2)">OCR-ready preview</p>
+              <canvas id="processedCanvas" class="ocr-canvas"></canvas>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="panel section-pad insights">
         <div class="status"><span class="dot"></span><span id="statusText">Ready for upload</span></div>
-        <div class="insight"><h4 class="tiny muted" style="text-transform:uppercase;letter-spacing:.08em">Detected title</h4><p id="scheduleTitle" style="font-size:var(--text-lg);font-weight:800;margin-top:var(--space-2)">No schedule loaded</p><p id="scheduleMeta" class="muted tiny" style="margin-top:var(--space-2)">Upload an image to detect title and date range.</p></div>
-        <div class="insight"><h4 class="tiny muted" style="text-transform:uppercase;letter-spacing:.08em">Coverage</h4><p id="coverageText" style="font-size:var(--text-lg);font-weight:800;margin-top:var(--space-2)">0 shifts across 0 days</p><p id="coverageMeta" class="muted tiny" style="margin-top:var(--space-2)">The parser groups results by day and role.</p></div>
-        <div class="insight"><h4 class="tiny muted" style="text-transform:uppercase;letter-spacing:.08em">Parse note</h4><p id="noteTitle" style="font-size:var(--text-lg);font-weight:800;margin-top:var(--space-2)">Waiting for OCR</p><p id="noteText" class="muted tiny" style="margin-top:var(--space-2)">If the result looks off, increase contrast or crop tighter around the roster grid.</p></div>
+        <div class="insight">
+          <h4 class="tiny muted" style="text-transform:uppercase;letter-spacing:.08em">Detected title</h4>
+          <p id="scheduleTitle" style="font-size:var(--text-lg);font-weight:800;margin-top:var(--space-2)">No schedule loaded</p>
+          <p id="scheduleMeta" class="muted tiny" style="margin-top:var(--space-2)">Upload an image to detect title and date range.</p>
+        </div>
+        <div class="insight">
+          <h4 class="tiny muted" style="text-transform:uppercase;letter-spacing:.08em">Coverage</h4>
+          <p id="coverageText" style="font-size:var(--text-lg);font-weight:800;margin-top:var(--space-2)">0 shifts across 0 days</p>
+          <p id="coverageMeta" class="muted tiny" style="margin-top:var(--space-2)">The parser groups results by day and role.</p>
+        </div>
+        <div class="insight">
+          <h4 class="tiny muted" style="text-transform:uppercase;letter-spacing:.08em">Parse note</h4>
+          <p id="noteTitle" style="font-size:var(--text-lg);font-weight:800;margin-top:var(--space-2)">Waiting for OCR</p>
+          <p id="noteText" class="muted tiny" style="margin-top:var(--space-2)">If the result looks off, increase contrast or crop tighter around the roster grid.</p>
+        </div>
       </div>
     </section>
-    <section class="toolbar"><input id="searchInput" class="field" type="search" placeholder="Filter employee, role, or day" /><select id="dayFilter" class="select" aria-label="Filter day"><option value="all">All days</option></select><div id="roleChips" class="chip-row"></div></section>
+
+    <section class="toolbar">
+      <input id="searchInput" class="field" type="search" placeholder="Filter employee, role, or day" />
+      <select id="dayFilter" class="select" aria-label="Filter day"><option value="all">All days</option></select>
+      <div id="roleChips" class="chip-row"></div>
+    </section>
+
     <section class="grid">
-      <div class="panel section-pad"><div style="display:flex;justify-content:space-between;gap:var(--space-4);align-items:center;flex-wrap:wrap;margin-bottom:var(--space-4)"><div><h3 style="font-size:var(--text-lg);font-weight:800">Day-by-day view</h3><p class="tiny muted">Clean review cards for quick scanning.</p></div><div class="status"><span class="dot"></span><span id="visibleCount">0 visible shifts</span></div></div><div id="days" class="days"></div></div>
-      <div style="display:grid;gap:var(--space-6);align-content:start"><div class="panel section-pad"><h3 style="font-size:var(--text-lg);font-weight:800;margin-bottom:var(--space-4)">Shift table</h3><div class="table-wrap"><table><thead><tr><th>Employee</th><th>Role</th><th>Day</th><th>Time</th><th>Hours</th></tr></thead><tbody id="tableBody"></tbody></table></div></div><div class="panel section-pad"><h3 style="font-size:var(--text-lg);font-weight:800">Raw OCR text</h3><p class="tiny muted" style="margin-top:var(--space-2);margin-bottom:var(--space-4)">Use this to inspect what the OCR engine actually saw.</p><div id="rawText" class="note-box">No OCR text yet.</div></div></div>
+      <div class="panel section-pad">
+        <div style="display:flex;justify-content:space-between;gap:var(--space-4);align-items:center;flex-wrap:wrap;margin-bottom:var(--space-4)">
+          <div>
+            <h3 style="font-size:var(--text-lg);font-weight:800">Day-by-day view</h3>
+            <p class="tiny muted">Clean review cards for quick scanning.</p>
+          </div>
+          <div class="status"><span class="dot"></span><span id="visibleCount">0 visible shifts</span></div>
+        </div>
+        <div id="days" class="days"></div>
+      </div>
+
+      <div style="display:grid;gap:var(--space-6);align-content:start">
+        <div class="panel section-pad">
+          <h3 style="font-size:var(--text-lg);font-weight:800;margin-bottom:var(--space-4)">Shift table</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Employee</th><th>Role</th><th>Day</th><th>Time</th><th>Hours</th></tr></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel section-pad">
+          <h3 style="font-size:var(--text-lg);font-weight:800">Raw OCR text</h3>
+          <p class="tiny muted" style="margin-top:var(--space-2);margin-bottom:var(--space-4)">Use this to inspect what the OCR engine actually saw.</p>
+          <div id="rawText" class="note-box">No OCR text yet.</div>
+        </div>
+      </div>
     </section>
   </main>
 </div>
-<script src="./vendor/tesseract/tesseract.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const state={theme:'light',worker:null,workerReady:false,processing:false,search:'',day:'all',role:'all',contrast:165,sharpen:1,rawText:'',title:'',meta:'',shifts:[],roleColors:{'Manager':'#01696f','Delivery Expert':'#006494','CSR':'#437a22','Cook':'#964219','Driver':'#7a39bb','Unknown':'#7a7974'}};
-const sampleData={title:'Store 3044 Weekly Schedule',meta:'8/3/2026 - 8/9/2026 · Version 1 · Demo parse',rawText:'Store 3044 Weekly Schedule
+const state = {
+  theme: 'light',
+  worker: null,
+  workerReady: false,
+  processing: false,
+  search: '',
+  day: 'all',
+  role: 'all',
+  contrast: 165,
+  threshold: 170,
+  rawText: '',
+  title: '',
+  meta: '',
+  shifts: [],
+  roleColors: {
+    'Manager': '#01696f',
+    'Delivery Expert': '#006494',
+    'CSR': '#437a22',
+    'Cook': '#964219',
+    'Driver': '#7a39bb',
+    'Unknown': '#7a7974'
+  }
+};
+
+const sampleData = {
+  title: 'Store 3044 Weekly Schedule',
+  meta: '8/3/2026 - 8/9/2026 · Version 1 · Demo parse',
+  rawText: `Store 3044 Weekly Schedule
 Manager
 LANDER, JENNIFER Tuesday 4:00 PM-12:30 AM Wednesday 4:00 PM-12:30 AM Thursday 4:00 PM-12:30 AM Friday 4:00 PM-9:30 PM
 MULLER, JARED Monday 9:30 AM-7:30 PM Tuesday 9:30 AM-7:00 PM Wednesday 9:30 AM-7:00 PM Thursday 9:30 AM-7:30 PM Friday 11:00 AM-8:00 PM
 Delivery Expert
 BATSON, JACK Monday 4:30 PM-9:00 PM
-LUCAS, JAIYA Tuesday 6:00 PM-10:30 PM Wednesday 6:00 PM-11:00 PM Friday 11:00 AM-7:00 PM Saturday 5:00 PM-8:00 PM Sunday 11:00 AM-4:00 PM',shifts:[{employee:'Lander, Jennifer',role:'Manager',day:'Tuesday',start:'4:00 PM',end:'12:30 AM',hours:8.5},{employee:'Muller, Jared',role:'Manager',day:'Monday',start:'9:30 AM',end:'7:30 PM',hours:10},{employee:'Lucas, Jaiya',role:'Delivery Expert',day:'Friday',start:'11:00 AM',end:'7:00 PM',hours:8},{employee:'Templet, Aiden',role:'Delivery Expert',day:'Sunday',start:'10:30 AM',end:'7:00 PM',hours:8.5}]};
-const daysOfWeek=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const $=id=>document.getElementById(id); const els={fileInput:$('fileInput'),dropzone:$('dropzone'),dropText:$('dropText'),previewWrap:$('previewWrap'),previewImage:$('previewImage'),processedCanvas:$('processedCanvas'),statusText:$('statusText'),scheduleTitle:$('scheduleTitle'),scheduleMeta:$('scheduleMeta'),coverageText:$('coverageText'),coverageMeta:$('coverageMeta'),noteTitle:$('noteTitle'),noteText:$('noteText'),workerBadge:$('workerBadge'),metricEmployees:$('metricEmployees'),metricShifts:$('metricShifts'),metricHours:$('metricHours'),searchInput:$('searchInput'),dayFilter:$('dayFilter'),roleChips:$('roleChips'),days:$('days'),tableBody:$('tableBody'),rawText:$('rawText'),visibleCount:$('visibleCount'),themeBtn:$('themeBtn'),sampleBtn:$('sampleBtn'),legend:$('legend'),contrastRange:$('contrastRange'),contrastOut:$('contrastOut'),sharpenRange:$('sharpenRange'),sharpenOut:$('sharpenOut')};
-function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function setTheme(theme){state.theme=theme;document.documentElement.setAttribute('data-theme',theme);els.themeBtn.textContent=theme==='dark'?'Light mode':'Dark mode'}
-function initTheme(){setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
-function setStatus(text,kind='idle'){els.statusText.textContent=text;els.workerBadge.textContent=text;els.workerBadge.className=kind==='error'?'badge warn':kind==='success'?'badge success':'badge'}
-function formatHours(v){const n=Math.round(Number(v||0)*100)/100;return Number.isInteger(n)?String(n):n.toFixed(2).replace(/0$/,'')}
-function toTitleCase(v){return v.toLowerCase().replace(/(^|\s|,|-)([a-z])/g,(m,a,b)=>a+b.toUpperCase())}
-function roleColor(role){const palette=['#01696f','#006494','#437a22','#964219','#7a39bb','#a13544','#d19900'];if(!state.roleColors[role]) state.roleColors[role]=palette[Object.keys(state.roleColors).length%palette.length];return state.roleColors[role]}
-function renderLegend(){els.legend.innerHTML='';Object.entries(state.roleColors).forEach(([role,color])=>{const row=document.createElement('div');row.className='legend-item';row.innerHTML=`<span class="swatch" style="background:${color}"></span><span>${escapeHtml(role)}</span>`;els.legend.appendChild(row)})}
-async function ensureWorker(){if(state.workerReady&&state.worker) return state.worker; if(!window.Tesseract) throw new Error('Tesseract script not loaded'); setStatus('Loading OCR engine...'); const worker=await Tesseract.createWorker('eng', 1, {workerPath: '/schedule-reviewer/vendor/tesseract/worker.min.js',langPath: '/schedule-reviewer/vendor/tesseract/lang-data',corePath: '/schedule-reviewer/vendor/tesseract',workerBlobURL: true}); state.worker=worker; state.workerReady=true; setStatus('OCR engine ready','success'); return worker;}
-function readImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=reader.result};reader.onerror=reject;reader.readAsDataURL(file)})}
-function preprocessImageToCanvas(img){const maxDim=2400;const scale=Math.min(maxDim/img.width,maxDim/img.height,2.5);const width=Math.max(1,Math.round(img.width*scale));const height=Math.max(1,Math.round(img.height*scale));const canvas=els.processedCanvas;canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.clearRect(0,0,width,height);ctx.drawImage(img,0,0,width,height);const imageData=ctx.getImageData(0,0,width,height);const data=imageData.data;const contrast=state.contrast/100;for(let i=0;i<data.length;i+=4){const gray=data[i]*0.299+data[i+1]*0.587+data[i+2]*0.114;let adjusted=((gray/255-.5)*contrast+.5)*255;adjusted=adjusted>170?255:adjusted<95?0:adjusted;data[i]=adjusted;data[i+1]=adjusted;data[i+2]=adjusted}ctx.putImageData(imageData,0,0);return canvas}
-function extractTitleInfo(text){const lines=text.split(/
-+/).map(v=>v.trim()).filter(Boolean);return {title:lines.find(v=>/schedule/i.test(v))||'Parsed schedule',meta:lines.find(v=>/\d{1,2}\/\d{1,2}\/\d{2,4}/.test(v))||'Date range not confidently detected'}}
-function parseRoleSections(text){const lines=text.split(/
-+/).map(v=>v.trim()).filter(Boolean);const sections=[];let current={role:'Unknown',lines:[]};for(const line of lines){const m=line.match(/^(Manager|Delivery Expert|CSR|Cook|Driver)/i);if(m){if(current.lines.length) sections.push(current);current={role:m[1],lines:[]}}else current.lines.push(line)}if(current.lines.length) sections.push(current);return sections}
-function to24(hour,minute,meridiem){let h=parseInt(hour,10);const m=parseInt(minute||'0',10);const mer=meridiem.toUpperCase();if(mer==='PM'&&h!==12) h+=12; if(mer==='AM'&&h===12) h=0; return {h,m}}
-function durationHours(start,end){let a=start.h*60+start.m,b=end.h*60+end.m; if(b<=a) b+=24*60; return Math.round(((b-a)/60)*100)/100}
-function displayTime(hour,minute,meridiem){return `${parseInt(hour,10)}:${String(minute||'00').padStart(2,'0')} ${meridiem.toUpperCase()}`}
-function inferNearbyDay(text,index){const sample=text.slice(Math.max(0,index-80),index+40);const found=daysOfWeek.filter(day=>sample.toLowerCase().includes(day.toLowerCase()));return found[found.length-1]||null}
-function parseEmployeeLine(line,fallbackRole){const shifts=[];const normalized=line.replace(/[|_]/g,' ').replace(/\s+/g,' ').trim();const role=/delivery expert/i.test(normalized)?'Delivery Expert':/manager/i.test(normalized)?'Manager':fallbackRole;const nameMatch=normalized.match(/^([A-Z][A-Z'\-,\. ]{3,})/);if(!nameMatch) return shifts;const employee=toTitleCase(nameMatch[1].replace(/[^A-Z,\-\s]/gi,' ').replace(/\s+/g,' ').trim());const timeRegex=/(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)?\s*(\d{1,2})(?::(\d{2}))?\s*([AP]M)\s*[-–]\s*(\d{1,2})(?::(\d{2}))?\s*([AP]M)/ig;let match,lastDay=null;while((match=timeRegex.exec(normalized))){const day=match[1]||lastDay||inferNearbyDay(normalized,match.index)||'Unassigned';lastDay=day;const start=to24(match[2],match[3],match[4]);const end=to24(match[5],match[6],match[7]);shifts.push({employee,role,day,start:displayTime(match[2],match[3],match[4]),end:displayTime(match[5],match[6],match[7]),hours:durationHours(start,end)})}return shifts}
-function dedupeShifts(shifts){const seen=new Set();return shifts.filter(shift=>{const key=[shift.employee,shift.role,shift.day,shift.start,shift.end].join('|'); if(seen.has(key)) return false; seen.add(key); return true})}
-function parseScheduleText(text){const sections=parseRoleSections(text);let shifts=[];sections.forEach(section=>section.lines.forEach(line=>shifts.push(...parseEmployeeLine(line,section.role)))); if(!shifts.length) text.split(/
-+/).map(v=>v.trim()).filter(Boolean).forEach(line=>shifts.push(...parseEmployeeLine(line,'Unknown'))); const info=extractTitleInfo(text); return {title:info.title,meta:info.meta,shifts:dedupeShifts(shifts)}}
-function applyData(data,rawText,statusLabel='Parse complete'){state.title=data.title||'Parsed schedule';state.meta=data.meta||'Date range not detected';state.shifts=data.shifts||[];state.rawText=rawText||'';state.day='all';state.role='all';state.search='';els.searchInput.value='';setStatus(statusLabel,state.shifts.length?'success':'error');render()}
-function filteredShifts(){return state.shifts.filter(shift=>{const dayOk=state.day==='all'||shift.day===state.day;const roleOk=state.role==='all'||shift.role===state.role;const q=state.search.trim().toLowerCase();const bag=`${shift.employee} ${shift.role} ${shift.day} ${shift.start} ${shift.end}`.toLowerCase();return dayOk&&roleOk&&(!q||bag.includes(q))})}
-function renderFilters(){const days=[...new Set(state.shifts.map(s=>s.day).filter(Boolean))].filter(day=>daysOfWeek.includes(day));els.dayFilter.innerHTML='<option value="all">All days</option>'+days.map(day=>`<option value="${day}">${day}</option>`).join('');els.dayFilter.value=state.day;const roles=[...new Set(state.shifts.map(s=>s.role))];els.roleChips.innerHTML='';[{value:'all',label:'All roles'},...roles.map(role=>({value:role,label:role}))].forEach(item=>{const btn=document.createElement('button');btn.type='button';btn.className='chip'+(item.value===state.role?' active':'');btn.textContent=item.label;btn.addEventListener('click',()=>{state.role=item.value;render()});els.roleChips.appendChild(btn)})}
-function renderSummary(){const people=new Set(state.shifts.map(s=>s.employee));const totalHours=state.shifts.reduce((sum,s)=>sum+Number(s.hours||0),0);els.metricEmployees.textContent=people.size;els.metricShifts.textContent=state.shifts.length;els.metricHours.textContent=`${formatHours(totalHours)}h`;const activeDays=new Set(state.shifts.map(s=>s.day)).size;els.coverageText.textContent=`${state.shifts.length} shifts across ${activeDays} days`;els.coverageMeta.textContent=totalHours?`About ${formatHours(totalHours/Math.max(activeDays,1))} hours per active day.`:'No hours parsed yet.';els.scheduleTitle.textContent=state.title||'Parsed schedule';els.scheduleMeta.textContent=state.meta||'Date range not detected';els.rawText.textContent=state.rawText||'No OCR text yet.';if(state.shifts.length){const longest=[...state.shifts].sort((a,b)=>b.hours-a.hours)[0];els.noteTitle.textContent=`${longest.employee} has the longest parsed shift`;els.noteText.textContent=`${longest.day}: ${longest.start} - ${longest.end} (${formatHours(longest.hours)} hours).`}else{els.noteTitle.textContent='No shifts confidently parsed';els.noteText.textContent='The OCR result may still be useful in the raw text panel. Try a tighter crop or higher contrast.'}}
-function renderDayCards(shifts){els.days.innerHTML='';const grouped=daysOfWeek.map(day=>({day,shifts:shifts.filter(s=>s.day===day)})).filter(group=>group.shifts.length);if(!grouped.length){els.days.innerHTML='<div class="empty">No shifts match the current filter.</div>';return;}grouped.forEach(group=>{const total=group.shifts.reduce((sum,shift)=>sum+Number(shift.hours||0),0);const card=document.createElement('article');card.className='day-card';card.innerHTML=`<div class="day-head"><div><div style="font-weight:800;">${group.day}</div></div><div class="tiny muted mono">${formatHours(total)} total hours</div></div>`;const timeline=document.createElement('div');timeline.className='timeline';group.shifts.forEach(shift=>{const item=document.createElement('div');item.className='shift';item.style.setProperty('--accent',roleColor(shift.role));item.innerHTML=`<div class="shift-head"><div><div class="employee">${escapeHtml(shift.employee)}</div><div class="tiny muted">${escapeHtml(shift.role)}</div></div><div class="time">${escapeHtml(shift.start)} - ${escapeHtml(shift.end)}</div></div><div class="tiny muted" style="margin-top: var(--space-2);">${formatHours(shift.hours)} hours</div>`;timeline.appendChild(item)});card.appendChild(timeline);els.days.appendChild(card)})}
-function renderTable(shifts){els.tableBody.innerHTML='';if(!shifts.length){els.tableBody.innerHTML='<tr><td colspan="5" class="empty">No rows to show.</td></tr>'}else{shifts.forEach(shift=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${escapeHtml(shift.employee)}</td><td>${escapeHtml(shift.role)}</td><td>${escapeHtml(shift.day)}</td><td>${escapeHtml(shift.start)} - ${escapeHtml(shift.end)}</td><td>${formatHours(shift.hours)}</td>`;els.tableBody.appendChild(tr)})}els.visibleCount.textContent=`${shifts.length} visible shifts`}
-function render(){renderLegend();renderFilters();renderSummary();const visible=filteredShifts();renderDayCards(visible);renderTable(visible)}
-async function processFile(file){if(!file||state.processing) return; state.processing=true; try{setStatus('Preparing image...'); const img=await readImage(file); els.previewImage.src=img.src; els.previewWrap.classList.add('active'); els.dropText.style.display='none'; preprocessImageToCanvas(img); const worker=await ensureWorker(); setStatus('Running OCR...'); const { data }=await worker.recognize(els.processedCanvas); const rawText=data?.text||''; const parsed=parseScheduleText(rawText); applyData(parsed,rawText,parsed.shifts.length?'OCR complete':'OCR complete, parsing needs review')}catch(error){console.error(error); setStatus('OCR failed','error'); state.title='Parse failed'; state.meta='Check local Tesseract files and retry'; state.shifts=[]; state.rawText=String(error&&error.message?error.message:error); render()} finally{state.processing=false}}
-function wireDnD(){['dragenter','dragover'].forEach(type=>els.dropzone.addEventListener(type,event=>{event.preventDefault();els.dropzone.classList.add('dragging')}));['dragleave','drop'].forEach(type=>els.dropzone.addEventListener(type,event=>{event.preventDefault();els.dropzone.classList.remove('dragging')}));els.dropzone.addEventListener('drop',event=>{const [file]=event.dataTransfer.files;processFile(file)})}
-function initEvents(){els.fileInput.addEventListener('change',e=>processFile(e.target.files[0]));els.themeBtn.addEventListener('click',()=>setTheme(state.theme==='dark'?'light':'dark'));els.sampleBtn.addEventListener('click',()=>{applyData(sampleData,sampleData.rawText,'Demo data loaded');els.previewWrap.classList.remove('active');els.dropText.style.display='block'});els.searchInput.addEventListener('input',e=>{state.search=e.target.value;render()});els.dayFilter.addEventListener('change',e=>{state.day=e.target.value;render()});els.contrastRange.addEventListener('input',e=>{state.contrast=Number(e.target.value);els.contrastOut.textContent=`${state.contrast}%`});els.sharpenRange.addEventListener('input',e=>{state.sharpen=Number(e.target.value);els.sharpenOut.textContent=state.sharpen?'On':'Off'});wireDnD()}
-initTheme();initEvents();render();setStatus('Ready for upload');
+LUCAS, JAIYA Tuesday 6:00 PM-10:30 PM Wednesday 6:00 PM-11:00 PM Friday 11:00 AM-7:00 PM Saturday 5:00 PM-8:00 PM Sunday 11:00 AM-4:00 PM`,
+  shifts: [
+    {employee:'Lander, Jennifer',role:'Manager',day:'Tuesday',start:'4:00 PM',end:'12:30 AM',hours:8.5},
+    {employee:'Muller, Jared',role:'Manager',day:'Monday',start:'9:30 AM',end:'7:30 PM',hours:10},
+    {employee:'Lucas, Jaiya',role:'Delivery Expert',day:'Friday',start:'11:00 AM',end:'7:00 PM',hours:8},
+    {employee:'Templet, Aiden',role:'Delivery Expert',day:'Sunday',start:'10:30 AM',end:'7:00 PM',hours:8.5}
+  ]
+};
+
+const daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const $ = id => document.getElementById(id);
+const els = {
+  fileInput:$('fileInput'),
+  dropzone:$('dropzone'),
+  dropText:$('dropText'),
+  previewWrap:$('previewWrap'),
+  previewImage:$('previewImage'),
+  processedCanvas:$('processedCanvas'),
+  statusText:$('statusText'),
+  scheduleTitle:$('scheduleTitle'),
+  scheduleMeta:$('scheduleMeta'),
+  coverageText:$('coverageText'),
+  coverageMeta:$('coverageMeta'),
+  noteTitle:$('noteTitle'),
+  noteText:$('noteText'),
+  workerBadge:$('workerBadge'),
+  metricEmployees:$('metricEmployees'),
+  metricShifts:$('metricShifts'),
+  metricHours:$('metricHours'),
+  searchInput:$('searchInput'),
+  dayFilter:$('dayFilter'),
+  roleChips:$('roleChips'),
+  days:$('days'),
+  tableBody:$('tableBody'),
+  rawText:$('rawText'),
+  visibleCount:$('visibleCount'),
+  themeBtn:$('themeBtn'),
+  sampleBtn:$('sampleBtn'),
+  legend:$('legend'),
+  contrastRange:$('contrastRange'),
+  contrastOut:$('contrastOut'),
+  thresholdRange:$('thresholdRange'),
+  thresholdOut:$('thresholdOut')
+};
+
+function escapeHtml(v){
+  return String(v ?? '').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function setTheme(theme){
+  state.theme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  els.themeBtn.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+}
+
+function initTheme(){
+  setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+}
+
+function setStatus(text, kind='idle'){
+  els.statusText.textContent = text;
+  els.workerBadge.textContent = text;
+  els.workerBadge.className = kind === 'error' ? 'badge warn' : kind === 'success' ? 'badge success' : 'badge';
+}
+
+function formatHours(v){
+  const n = Math.round(Number(v || 0) * 100) / 100;
+  return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/0$/,'').replace(/\.$/,'');
+}
+
+function toTitleCase(v){
+  return v.toLowerCase().replace(/(^|\\s|,|-)([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+}
+
+function roleColor(role){
+  const palette = ['#01696f','#006494','#437a22','#964219','#7a39bb','#a13544','#d19900'];
+  if(!state.roleColors[role]) state.roleColors[role] = palette[Object.keys(state.roleColors).length % palette.length];
+  return state.roleColors[role];
+}
+
+function renderLegend(){
+  els.legend.innerHTML = '';
+  Object.entries(state.roleColors).forEach(([role,color])=>{
+    const row = document.createElement('div');
+    row.className = 'legend-item';
+    row.innerHTML = `<span class="swatch" style="background:${color}"></span><span>${escapeHtml(role)}</span>`;
+    els.legend.appendChild(row);
+  });
+}
+
+async function ensureWorker(){
+  if(state.workerReady && state.worker) return state.worker;
+  if(!window.Tesseract) throw new Error('Tesseract script not loaded');
+  setStatus('Loading OCR engine...');
+  const worker = await Tesseract.createWorker('eng');
+  state.worker = worker;
+  state.workerReady = true;
+  setStatus('OCR engine ready','success');
+  return worker;
+}
+
+function readImage(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>resolve(img);
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function preprocessImageToCanvas(img){
+  const maxDim = 2400;
+  const scale = Math.min(maxDim / img.width, maxDim / img.height, 2.5);
+  const width = Math.max(1, Math.round(img.width * scale));
+  const height = Math.max(1, Math.round(img.height * scale));
+  const canvas = els.processedCanvas;
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext('2d', { willReadFrequently:true });
+  ctx.clearRect(0,0,width,height);
+  ctx.drawImage(img,0,0,width,height);
+
+  const imageData = ctx.getImageData(0,0,width,height);
+  const data = imageData.data;
+  const contrast = state.contrast / 100;
+  const threshold = state.threshold;
+
+  for(let i=0;i<data.length;i+=4){
+    const gray = data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114;
+    let adjusted = ((gray/255 - .5) * contrast + .5) * 255;
+    adjusted = adjusted > threshold ? 255 : adjusted < (threshold - 75) ? 0 : adjusted;
+    data[i] = adjusted;
+    data[i+1] = adjusted;
+    data[i+2] = adjusted;
+  }
+
+  ctx.putImageData(imageData,0,0);
+  return canvas;
+}
+
+function extractTitleInfo(text){
+  const lines = text.split(/\\n+/).map(v=>v.trim()).filter(Boolean);
+  return {
+    title: lines.find(v=>/schedule/i.test(v)) || 'Parsed schedule',
+    meta: lines.find(v=>/\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}/.test(v)) || 'Date range not confidently detected'
+  };
+}
+
+function parseRoleSections(text){
+  const lines = text.split(/\\n+/).map(v=>v.trim()).filter(Boolean);
+  const sections = [];
+  let current = { role:'Unknown', lines:[] };
+
+  for(const line of lines){
+    const m = line.match(/^(Manager|Delivery Expert|CSR|Cook|Driver)\\b/i);
+    if(m){
+      if(current.lines.length) sections.push(current);
+      current = { role:m[1], lines:[] };
+    } else {
+      current.lines.push(line);
+    }
+  }
+
+  if(current.lines.length) sections.push(current);
+  return sections;
+}
+
+function to24(hour,minute,meridiem){
+  let h = parseInt(hour,10);
+  const m = parseInt(minute || '0',10);
+  const mer = meridiem.toUpperCase();
+  if(mer === 'PM' && h !== 12) h += 12;
+  if(mer === 'AM' && h === 12) h = 0;
+  return { h, m };
+}
+
+function durationHours(start,end){
+  let a = start.h*60 + start.m;
+  let b = end.h*60 + end.m;
+  if(b <= a) b += 24*60;
+  return Math.round(((b-a)/60)*100)/100;
+}
+
+function displayTime(hour,minute,meridiem){
+  return `${parseInt(hour,10)}:${String(minute || '00').padStart(2,'0')} ${meridiem.toUpperCase()}`;
+}
+
+function inferNearbyDay(text,index){
+  const sample = text.slice(Math.max(0,index-80), index+40);
+  const found = daysOfWeek.filter(day=>sample.toLowerCase().includes(day.toLowerCase()));
+  return found[found.length-1] || null;
+}
+
+function parseEmployeeLine(line,fallbackRole){
+  const shifts = [];
+  const normalized = line.replace(/[|_]/g,' ').replace(/\\s+/g,' ').trim();
+  const role = /delivery expert/i.test(normalized) ? 'Delivery Expert' : /manager/i.test(normalized) ? 'Manager' : fallbackRole;
+  const nameMatch = normalized.match(/^([A-Z][A-Z'\\-,\\. ]{3,})/);
+  if(!nameMatch) return shifts;
+
+  const employee = toTitleCase(
+    nameMatch[1].replace(/[^A-Z,\\-\\s]/gi,' ').replace(/\\s+/g,' ').trim()
+  );
+
+  const timeRegex = /(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)?\\s*(\\d{1,2})(?::(\\d{2}))?\\s*([AP]M)\\s*[-–]\\s*(\\d{1,2})(?::(\\d{2}))?\\s*([AP]M)/ig;
+  let match, lastDay = null;
+
+  while((match = timeRegex.exec(normalized))){
+    const day = match[1] || lastDay || inferNearbyDay(normalized, match.index) || 'Unassigned';
+    lastDay = day;
+    const start = to24(match[2],match[3],match[4]);
+    const end = to24(match[5],match[6],match[7]);
+    shifts.push({
+      employee,
+      role,
+      day,
+      start: displayTime(match[2],match[3],match[4]),
+      end: displayTime(match[5],match[6],match[7]),
+      hours: durationHours(start,end)
+    });
+  }
+
+  return shifts;
+}
+
+function dedupeShifts(shifts){
+  const seen = new Set();
+  return shifts.filter(shift=>{
+    const key = [shift.employee,shift.role,shift.day,shift.start,shift.end].join('|');
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function parseScheduleText(text){
+  const sections = parseRoleSections(text);
+  let shifts = [];
+
+  sections.forEach(section=>{
+    section.lines.forEach(line=>{
+      shifts.push(...parseEmployeeLine(line, section.role));
+    });
+  });
+
+  if(!shifts.length){
+    text.split(/\\n+/).map(v=>v.trim()).filter(Boolean).forEach(line=>{
+      shifts.push(...parseEmployeeLine(line,'Unknown'));
+    });
+  }
+
+  const info = extractTitleInfo(text);
+  return { title:info.title, meta:info.meta, shifts:dedupeShifts(shifts) };
+}
+
+function applyData(data, rawText, statusLabel='Parse complete'){
+  state.title = data.title || 'Parsed schedule';
+  state.meta = data.meta || 'Date range not detected';
+  state.shifts = data.shifts || [];
+  state.rawText = rawText || '';
+  state.day = 'all';
+  state.role = 'all';
+  state.search = '';
+  els.searchInput.value = '';
+  setStatus(statusLabel, state.shifts.length ? 'success' : 'error');
+  render();
+}
+
+function filteredShifts(){
+  return state.shifts.filter(shift=>{
+    const dayOk = state.day === 'all' || shift.day === state.day;
+    const roleOk = state.role === 'all' || shift.role === state.role;
+    const q = state.search.trim().toLowerCase();
+    const bag = `${shift.employee} ${shift.role} ${shift.day} ${shift.start} ${shift.end}`.toLowerCase();
+    return dayOk && roleOk && (!q || bag.includes(q));
+  });
+}
+
+function renderFilters(){
+  const days = [...new Set(state.shifts.map(s=>s.day).filter(Boolean))].filter(day=>daysOfWeek.includes(day));
+  els.dayFilter.innerHTML = '<option value="all">All days</option>' + days.map(day=>`<option value="${day}">${day}</option>`).join('');
+  els.dayFilter.value = state.day;
+
+  const roles = [...new Set(state.shifts.map(s=>s.role))];
+  els.roleChips.innerHTML = '';
+
+  [{value:'all',label:'All roles'}, ...roles.map(role=>({value:role,label:role}))].forEach(item=>{
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chip' + (item.value === state.role ? ' active' : '');
+    btn.textContent = item.label;
+    btn.addEventListener('click',()=>{
+      state.role = item.value;
+      render();
+    });
+    els.roleChips.appendChild(btn);
+  });
+}
+
+function renderSummary(){
+  const people = new Set(state.shifts.map(s=>s.employee));
+  const totalHours = state.shifts.reduce((sum,s)=>sum + Number(s.hours || 0),0);
+
+  els.metricEmployees.textContent = people.size;
+  els.metricShifts.textContent = state.shifts.length;
+  els.metricHours.textContent = `${formatHours(totalHours)}h`;
+
+  const activeDays = new Set(state.shifts.map(s=>s.day)).size;
+  els.coverageText.textContent = `${state.shifts.length} shifts across ${activeDays} days`;
+  els.coverageMeta.textContent = totalHours ? `About ${formatHours(totalHours / Math.max(activeDays,1))} hours per active day.` : 'No hours parsed yet.';
+  els.scheduleTitle.textContent = state.title || 'Parsed schedule';
+  els.scheduleMeta.textContent = state.meta || 'Date range not detected';
+  els.rawText.textContent = state.rawText || 'No OCR text yet.';
+
+  if(state.shifts.length){
+    const longest = [...state.shifts].sort((a,b)=>b.hours-a.hours)[0];
+    els.noteTitle.textContent = `${longest.employee} has the longest parsed shift`;
+    els.noteText.textContent = `${longest.day}: ${longest.start} - ${longest.end} (${formatHours(longest.hours)} hours).`;
+  } else {
+    els.noteTitle.textContent = 'No shifts confidently parsed';
+    els.noteText.textContent = 'The OCR result may still be useful in the raw text panel. Try a tighter crop or higher contrast.';
+  }
+}
+
+function renderDayCards(shifts){
+  els.days.innerHTML = '';
+  const grouped = daysOfWeek.map(day=>({day, shifts:shifts.filter(s=>s.day===day)})).filter(group=>group.shifts.length);
+
+  if(!grouped.length){
+    els.days.innerHTML = '<div class="empty">No shifts match the current filter.</div>';
+    return;
+  }
+
+  grouped.forEach(group=>{
+    const total = group.shifts.reduce((sum,shift)=>sum + Number(shift.hours || 0),0);
+    const card = document.createElement('article');
+    card.className = 'day-card';
+    card.innerHTML = `<div class="day-head"><div><div style="font-weight:800;">${group.day}</div></div><div class="tiny muted mono">${formatHours(total)} total hours</div></div>`;
+
+    const timeline = document.createElement('div');
+    timeline.className = 'timeline';
+
+    group.shifts.forEach(shift=>{
+      const item = document.createElement('div');
+      item.className = 'shift';
+      item.style.setProperty('--accent', roleColor(shift.role));
+      item.innerHTML = `<div class="shift-head"><div><div class="employee">${escapeHtml(shift.employee)}</div><div class="tiny muted">${escapeHtml(shift.role)}</div></div><div class="time">${escapeHtml(shift.start)} - ${escapeHtml(shift.end)}</div></div><div class="tiny muted" style="margin-top: var(--space-2);">${formatHours(shift.hours)} hours</div>`;
+      timeline.appendChild(item);
+    });
+
+    card.appendChild(timeline);
+    els.days.appendChild(card);
+  });
+}
+
+function renderTable(shifts){
+  els.tableBody.innerHTML = '';
+  if(!shifts.length){
+    els.tableBody.innerHTML = '<tr><td colspan="5" class="empty">No rows to show.</td></tr>';
+  } else {
+    shifts.forEach(shift=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${escapeHtml(shift.employee)}</td><td>${escapeHtml(shift.role)}</td><td>${escapeHtml(shift.day)}</td><td>${escapeHtml(shift.start)} - ${escapeHtml(shift.end)}</td><td>${formatHours(shift.hours)}</td>`;
+      els.tableBody.appendChild(tr);
+    });
+  }
+  els.visibleCount.textContent = `${shifts.length} visible shifts`;
+}
+
+function render(){
+  renderLegend();
+  renderFilters();
+  renderSummary();
+  const visible = filteredShifts();
+  renderDayCards(visible);
+  renderTable(visible);
+}
+
+async function processFile(file){
+  if(!file || state.processing) return;
+  state.processing = true;
+
+  try{
+    setStatus('Preparing image...');
+    const img = await readImage(file);
+    els.previewImage.src = img.src;
+    els.previewWrap.classList.add('active');
+    els.dropText.style.display = 'none';
+
+    preprocessImageToCanvas(img);
+
+    const worker = await ensureWorker();
+    setStatus('Running OCR...');
+
+    const { data } = await worker.recognize(els.processedCanvas);
+    const rawText = data?.text || '';
+    const parsed = parseScheduleText(rawText);
+
+    applyData(parsed, rawText, parsed.shifts.length ? 'OCR complete' : 'OCR complete, parsing needs review');
+  }catch(error){
+    console.error(error);
+    setStatus('OCR failed','error');
+    state.title = 'Parse failed';
+    state.meta = 'OCR engine error';
+    state.shifts = [];
+    state.rawText = String(error && error.message ? error.message : error);
+    render();
+  }finally{
+    state.processing = false;
+  }
+}
+
+function wireDnD(){
+  ['dragenter','dragover'].forEach(type=>els.dropzone.addEventListener(type,event=>{
+    event.preventDefault();
+    els.dropzone.classList.add('dragging');
+  }));
+
+  ['dragleave','drop'].forEach(type=>els.dropzone.addEventListener(type,event=>{
+    event.preventDefault();
+    els.dropzone.classList.remove('dragging');
+  }));
+
+  els.dropzone.addEventListener('drop',event=>{
+    const [file] = event.dataTransfer.files;
+    processFile(file);
+  });
+}
+
+function initEvents(){
+  els.fileInput.addEventListener('change',e=>processFile(e.target.files[0]));
+  els.themeBtn.addEventListener('click',()=>setTheme(state.theme === 'dark' ? 'light' : 'dark'));
+  els.sampleBtn.addEventListener('click',()=>{
+    applyData(sampleData, sampleData.rawText, 'Demo data loaded');
+    els.previewWrap.classList.remove('active');
+    els.dropText.style.display = 'block';
+  });
+  els.searchInput.addEventListener('input',e=>{
+    state.search = e.target.value;
+    render();
+  });
+  els.dayFilter.addEventListener('change',e=>{
+    state.day = e.target.value;
+    render();
+  });
+  els.contrastRange.addEventListener('input',e=>{
+    state.contrast = Number(e.target.value);
+    els.contrastOut.textContent = `${state.contrast}%`;
+  });
+  els.thresholdRange.addEventListener('input',e=>{
+    state.threshold = Number(e.target.value);
+    els.thresholdOut.textContent = String(state.threshold);
+  });
+  wireDnD();
+}
+
+initTheme();
+initEvents();
+render();
+setStatus('Ready for upload');
 </script>
 </body>
 </html>
