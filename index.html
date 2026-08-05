@@ -179,23 +179,68 @@ async function callGemini(base64Image, apiKey) {
   }
   Ensure you calculate the hours accurately based on the start and end times. Ensure you group employees to their correct Roles (Manager, Delivery Expert, etc) based on the section they appear in.`;
 
-  // Updated to the active 2026 Gemini model endpoint
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Image.split(',')[1] } }] }]
   };
 
-  const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-  if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
-  
-  const data = await response.json();
-  const textResponse = data.candidates[0].content.parts[0].text;
-  
-  // Extract strictly what is between the first { and the last } using Regex to avoid Markdown or conversational text errors
-  const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error("Failed to extract JSON. Raw response: " + textResponse);
-  
-  return JSON.parse(jsonMatch[0]);
+  // An array of aliases and models to try if the primary one is busy or missing
+  const modelsToTry = [
+    'gemini-flash-latest',
+    'gemini-3.5-flash',
+    'gemini-pro-latest',
+    'gemini-3.1-pro'
+  ];
+
+  let lastError = "";
+
+  for (const model of modelsToTry) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    // Try each model up to 3 times in case of temporary 503 traffic spikes
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        updateStatus(`Connecting to ${model}... (Attempt ${attempt}/3)`);
+        
+        const response = await fetch(url, {
+          method: "POST", 
+          headers: { "Content-Type": "application/json" }, 
+          body: JSON.stringify(payload) 
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const textResponse = data.candidates[0].content.parts[0].text;
+          
+          // Safely extract just the JSON
+          const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) throw new Error("Failed to extract JSON structure.");
+          
+          return JSON.parse(jsonMatch[0]);
+        }
+
+        // If 503 (Unavailable) or 429 (Too Many Requests), wait and retry
+        if (response.status === 503 || response.status === 429 || response.status === 500) {
+          lastError = `API Error: ${response.status} (Google Servers Busy)`;
+          console.warn(`[ShiftScope] ${model} returned ${response.status}. Retrying in ${attempt * 2}s...`);
+          // Exponential backoff (2s, then 4s)
+          await new Promise(resolve => setTimeout(resolve, attempt * 2000));
+          continue; 
+        } else {
+          // If it's a 404 (Not Found) or 400 (Bad Request), don't retry. Move to the next model.
+          lastError = `API Error: ${response.status} (${response.statusText})`;
+          console.warn(`[ShiftScope] ${model} failed with ${response.status}. Trying next model...`);
+          break; 
+        }
+
+      } catch (err) {
+        lastError = err.message;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+  }
+
+  // If it loops through every model and all retries fail:
+  throw new Error(`All Gemini models failed. Last issue: ${lastError}`);
 }
 
 // --- UI Logic ---
