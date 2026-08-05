@@ -1,79 +1,67 @@
+
 # ShiftScope GitHub Pages
 
-Static schedule OCR reviewer for weekly staff schedules.
+Static schedule OCR reviewer for weekly staff schedules, packaged so the OCR worker and language files live inside the repo.
 
-## What it does
+## Important fix
 
-- Upload a schedule screenshot or photo in the browser.
-- Runs OCR client-side with Tesseract.js.
-- Shows the original image, a processed OCR canvas, raw OCR text, and a cleaner schedule breakdown.
-- Includes filters for day and role.
-- Works on GitHub Pages because it is a static HTML app.
+The earlier build loaded Tesseract.js from a CDN and relied on default worker resolution. This package now points the app at local files inside `vendor/tesseract/`, so GitHub Pages can serve the script, worker, and language data from the same site origin.[cite:4][cite:22][cite:30]
 
-## Files
+## Included files
 
-- `index.html` — main app for GitHub Pages.
-- `README.md` — setup and deployment instructions.
-- `.gitignore` — basic ignore file for local clutter.
+- `index.html` — main app.
+- `vendor/tesseract/tesseract.min.js` — browser bundle.
+- `vendor/tesseract/worker.min.js` — OCR worker.
+- `vendor/tesseract/tesseract-core-simd.wasm.js` — wasm loader path used by the app.
+- `vendor/tesseract/lang-data/eng.traineddata.gz` — English language data.
+- `README.md` — setup notes.
+- `.gitignore` — basic ignore file.
 
-## Quick start
-
-1. Create a new GitHub repository.
-2. Upload all files from this folder to the repository root.
-3. Commit and push.
-4. In GitHub, open **Settings > Pages**.
-5. Under **Build and deployment**, choose **Deploy from a branch**.
-6. Select your main branch and the `/ (root)` folder.
-7. Save the settings.
-8. Wait for GitHub Pages to publish the site.
-
-GitHub Pages serves static HTML, CSS, and JavaScript, which matches how this app is built.[cite:3]
-
-## Recommended repo structure
+## Repo structure
 
 ```text
 shiftscope-github-pages/
 ├── index.html
 ├── README.md
-└── .gitignore
+├── .gitignore
+└── vendor/
+    └── tesseract/
+        ├── tesseract.min.js
+        ├── worker.min.js
+        ├── tesseract-core-simd.wasm.js
+        └── lang-data/
+            └── eng.traineddata.gz
 ```
 
-## How to use the app
+## Deploy
 
-1. Open the deployed site.
-2. Click **Upload schedule image**.
-3. Choose a JPG, PNG, or WEBP schedule screenshot.
-4. Wait for the OCR engine to load and finish parsing.
-5. Review the day cards, shift table, and raw OCR text.
+1. Put all files in the repository root.
+2. Commit and push.
+3. In GitHub, open **Settings > Pages**.
+4. Choose **Deploy from a branch**.
+5. Select the main branch and `/ (root)`.
+6. Save and wait for publish.
+
+GitHub Pages serves static site files, which is why this package keeps the OCR assets in the repository instead of requiring a backend.[cite:3]
+
+## Verify the files after deploy
+
+Open these URLs in your deployed site and make sure they load:
+
+- `/vendor/tesseract/tesseract.min.js`
+- `/vendor/tesseract/worker.min.js`
+- `/vendor/tesseract/tesseract-core-simd.wasm.js`
+- `/vendor/tesseract/lang-data/eng.traineddata.gz`
+
+If one of those returns 404, OCR will fail because the worker or language files are missing.[cite:22][cite:30][cite:34]
+
+## Why you could not find Tesseract.js
+
+In the previous package, Tesseract.js was referenced from a CDN script tag rather than stored as a file inside the repository. The Tesseract distribution includes separate browser bundle and worker files, which is why simply having one script reference is not always enough for a predictable static deployment.[cite:22][cite:26]
 
 ## Best results
 
-- Crop tightly around the schedule grid.
-- Use high-contrast screenshots when possible.
-- If text is faint, increase the contrast slider.
-- If parsing misses shifts, compare against the raw OCR text panel.
-
-## Troubleshooting
-
-### The page loads but OCR does not start
-
-- Hard refresh the page.
-- Make sure the browser allows JS from CDNs.
-- Test the **Load working demo** button first.
-
-Tesseract.js supports browser-based OCR projects, which is why this app can run on a static site without a backend.[cite:4]
-
-### The OCR result is messy
-
-- Crop the image tighter.
-- Increase contrast.
-- Use screenshots instead of camera photos when possible.
-- Try uploading a cleaner weekly schedule image.
-
-### GitHub Pages deploys but I see the wrong page
-
-Make sure the app file is named `index.html` in the repository root, because GitHub Pages serves static content from the configured branch and folder.[cite:3]
-
-## Updating the app
-
-Replace `index.html` with a newer version, commit, and push again. GitHub Pages will republish the updated static site automatically after the new commit is processed.[cite:3]
+- Upload tightly cropped screenshots.
+- Prefer screenshots over angled camera photos.
+- Increase contrast if the printed schedule is faint.
+- Use the raw OCR text panel to inspect what the OCR engine actually read.
