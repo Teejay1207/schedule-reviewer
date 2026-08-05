@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShiftScope - AI Vision</title>
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
-  <!-- Include dom-to-image library from CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
   <style>
     :root,[data-theme="light"]{
@@ -42,13 +41,13 @@
     .topbar{display:flex;justify-content:space-between;gap:var(--space-4);align-items:center;flex-wrap:wrap}
     .btn,.field,.select{min-height:46px;border-radius:var(--radius-lg);border:1px solid color-mix(in srgb,var(--color-text) 12%,transparent);background:var(--color-surface);padding:0 var(--space-4); font-weight: 500;}
     .btn.primary{background:var(--color-primary);color:var(--color-text-inverse);border-color:transparent}
-    .upload-btn{width:100%;display:inline-flex;align-items:center;justify-content:center;min-height:54px;border-radius:var(--radius-lg);background:var(--color-primary);color:var(--color-text-inverse);font-weight:700}
+    .upload-btn{width:100%;display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:var(--radius-lg);background:var(--color-primary);color:var(--color-text-inverse);font-weight:700}
     .upload-btn input{display:none}
     .metrics{display:grid;gap:var(--space-3)}
     .metric{background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4)}
     .metric strong{display:block;font-size:var(--text-lg)}
     .hero{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-6)}
-    .dropzone{min-height:200px;border-radius:22px;border:1.5px dashed var(--color-primary);background:color-mix(in srgb,var(--color-primary) 4%,var(--color-surface-offset));display:grid;place-items:center;padding:var(--space-5);overflow:hidden}
+    .dropzone{min-height:200px;border-radius:22px;border:1.5px dashed var(--color-primary);background:color-mix(in srgb,var(--color-primary) 4%,var(--color-surface-offset));display:grid;place-items:center;padding:var(--space-5);overflow:hidden; text-align:center;}
     .preview-wrap{display:none;width:100%} .preview-wrap.active{display:block}
     .preview-image{width:100%;border-radius:18px;max-height:400px;object-fit:contain}
     .toolbar{display:flex;flex-wrap:wrap;gap:var(--space-3)} .field{flex:1 1 260px}
@@ -92,7 +91,11 @@
       <h3 style="font-size:var(--text-sm);margin-bottom:var(--space-2)">Gemini API Key</h3>
       <p class="tiny muted" style="margin-bottom:var(--space-3)">Required for image parsing. Saved locally.</p>
       <input id="apiKeyInput" class="field" type="password" placeholder="AIzaSy..." style="margin-bottom:var(--space-3)">
-      <label class="upload-btn" for="fileInput">Upload schedule image<input id="fileInput" type="file" accept="image/*" /></label>
+      
+      <div style="display:flex; gap: 8px;">
+        <label class="upload-btn" for="fileInput" style="flex: 1;">Upload image<input id="fileInput" type="file" accept="image/*" /></label>
+        <button id="clearBtn" class="btn" type="button" style="display: none; padding: 0 16px;" title="Clear saved schedule">🗑️</button>
+      </div>
     </section>
 
     <section class="panel section-pad">
@@ -124,7 +127,8 @@
         </div>
         <div id="dropzone" class="dropzone">
           <div id="dropText">
-            <strong style="display:block;font-size:var(--text-lg);text-align:center">Select an image</strong>
+            <strong style="display:block;font-size:var(--text-lg)">Select an image</strong>
+            <span class="tiny muted">No schedule loaded</span>
           </div>
           <div id="previewWrap" class="preview-wrap">
             <img id="previewImage" class="preview-image" alt="Uploaded schedule" />
@@ -177,23 +181,29 @@ const $ = id => document.getElementById(id);
 const els = {
   fileInput:$('fileInput'), dropzone:$('dropzone'), dropText:$('dropText'), previewWrap:$('previewWrap'), previewImage:$('previewImage'),
   statusBadge:$('statusBadge'), metricEmployees:$('metricEmployees'), metricShifts:$('metricShifts'), metricHours:$('metricHours'),
-  searchInput:$('searchInput'), days:$('days'), tableBody:$('tableBody'), rawText:$('rawText'), themeBtn:$('themeBtn'), apiKeyInput:$('apiKeyInput'), exportBtn:$('exportBtn'), exportContainer:$('exportContainer')
+  searchInput:$('searchInput'), days:$('days'), tableBody:$('tableBody'), rawText:$('rawText'), themeBtn:$('themeBtn'), apiKeyInput:$('apiKeyInput'), exportBtn:$('exportBtn'), exportContainer:$('exportContainer'), clearBtn:$('clearBtn')
 };
 
 // --- API Logic ---
 async function callGemini(base64Image, apiKey) {
   const prompt = `You are an expert data extraction assistant. Analyze this work schedule image. 
   Extract the store title, dates, and all shifts.
+  
+  CRITICAL INSTRUCTIONS FOR ABBREVIATIONS:
+  - 'DE' means 'Delivery Expert'. If a shift has (DE) or DE, their role for that shift is Delivery Expert.
+  - 'C' means 'Close'. If you see 'C' or '- C' on a shift time, append ' (Close)' to their end time.
+  - 'O' means 'Open'. If you see 'O' or '- O' on a shift time, append ' (Open)' to their start time.
+  
+  Calculate the hours accurately based on the numerical times provided.
   Return ONLY a valid, minified JSON object with no markdown formatting, no code blocks, and no extra text.
   Structure it exactly like this:
   {
     "title": "Store 3044 Weekly Schedule",
     "meta": "8/3/2026 - 8/9/2026",
     "shifts": [
-      {"employee": "Lander, Jennifer", "role": "Manager", "day": "Tuesday", "start": "4:00 PM", "end": "12:30 AM", "hours": 8.5}
+      {"employee": "Lander, Jennifer", "role": "Manager", "day": "Tuesday", "start": "4:00 PM", "end": "12:30 AM (Close)", "hours": 8.5}
     ]
-  }
-  Ensure you calculate the hours accurately based on the start and end times. Ensure you group employees to their correct Roles (Manager, Delivery Expert, etc) based on the section they appear in.`;
+  }`;
 
   const payload = {
     contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Image.split(',')[1] } }] }]
@@ -257,6 +267,9 @@ function render() {
     return !q || bag.includes(q);
   });
 
+  // Show/Hide Clear Button
+  els.clearBtn.style.display = state.shifts.length > 0 ? 'block' : 'none';
+
   // Calculate Total Hours per Employee
   const employeeTotals = {};
   visible.forEach(shift => {
@@ -266,7 +279,6 @@ function render() {
     employeeTotals[shift.employee].hours += Number(shift.hours || 0);
   });
 
-  // Sort employees by name alphabetically
   const sortedEmployees = Object.keys(employeeTotals).sort();
 
   // Update Metrics
@@ -308,7 +320,7 @@ function render() {
     els.tableBody.appendChild(tr);
   });
 
-  // Render Export Container (Hidden)
+  // Render Export Container
   if (sortedEmployees.length > 0) {
       els.exportBtn.style.display = 'block';
       let exportHtml = `
@@ -357,6 +369,7 @@ els.exportBtn.addEventListener('click', () => {
         });
 });
 
+// Process Image
 function processImage(file) {
   if(!file || state.processing) return;
   const apiKey = els.apiKeyInput.value.trim();
@@ -376,10 +389,20 @@ function processImage(file) {
     try {
       updateStatus("AI Parsing...");
       const result = await callGemini(base64, apiKey);
+      
       state.shifts = result.shifts || [];
       state.title = result.title || 'Schedule';
       state.meta = result.meta || '';
       els.rawText.textContent = JSON.stringify(result, null, 2);
+      
+      // Save to localStorage so it survives refreshes
+      localStorage.setItem('shiftscope_data', JSON.stringify({
+         title: state.title,
+         meta: state.meta,
+         shifts: state.shifts,
+         raw: els.rawText.textContent
+      }));
+      
       updateStatus("Complete", "success");
     } catch(err) {
       updateStatus("Parse failed", "error");
@@ -392,8 +415,43 @@ function processImage(file) {
   reader.readAsDataURL(file);
 }
 
-// Init
+// Clear Data
+els.clearBtn.addEventListener('click', () => {
+   if(confirm('Clear the saved schedule data?')) {
+       localStorage.removeItem('shiftscope_data');
+       state.shifts = [];
+       state.title = '';
+       state.meta = '';
+       els.rawText.textContent = 'No data yet.';
+       els.previewWrap.classList.remove('active');
+       els.dropText.style.display = 'block';
+       els.dropText.innerHTML = '<strong style="display:block;font-size:var(--text-lg)">Select an image</strong><span class="tiny muted">No schedule loaded</span>';
+       updateStatus("Ready");
+       render();
+   }
+});
+
+// Initialization
 els.apiKeyInput.value = localStorage.getItem('shiftscope_api_key') || '';
+
+// Load saved schedule if it exists
+const savedData = localStorage.getItem('shiftscope_data');
+if (savedData) {
+    try {
+        const parsed = JSON.parse(savedData);
+        state.title = parsed.title || '';
+        state.meta = parsed.meta || '';
+        state.shifts = parsed.shifts || [];
+        els.rawText.textContent = parsed.raw || JSON.stringify(parsed, null, 2);
+        
+        els.dropText.innerHTML = '<strong style="display:block;font-size:var(--text-lg);color:var(--color-primary);">Saved schedule loaded</strong><span class="tiny muted">Upload a new image to replace</span>';
+        updateStatus("Loaded from memory", "success");
+        render();
+    } catch(e) {
+        console.error("Could not parse saved schedule data.");
+    }
+}
+
 els.fileInput.addEventListener('change', e => processImage(e.target.files[0]));
 els.searchInput.addEventListener('input', e => { state.search = e.target.value; render(); });
 els.themeBtn.addEventListener('click', () => {
