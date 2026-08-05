@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShiftScope - AI Vision</title>
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+  <!-- Include dom-to-image library from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
   <style>
     :root,[data-theme="light"]{
       --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);--text-sm:clamp(.875rem,.8rem + .35vw,1rem);
@@ -38,7 +40,7 @@
     .logo svg{width:24px;height:24px}
     h1,h2,h3,p{margin:0} .muted{color:var(--color-text-muted)} .tiny{font-size:var(--text-xs)}
     .topbar{display:flex;justify-content:space-between;gap:var(--space-4);align-items:center;flex-wrap:wrap}
-    .btn,.field,.select{min-height:46px;border-radius:var(--radius-lg);border:1px solid color-mix(in srgb,var(--color-text) 12%,transparent);background:var(--color-surface);padding:0 var(--space-4)}
+    .btn,.field,.select{min-height:46px;border-radius:var(--radius-lg);border:1px solid color-mix(in srgb,var(--color-text) 12%,transparent);background:var(--color-surface);padding:0 var(--space-4); font-weight: 500;}
     .btn.primary{background:var(--color-primary);color:var(--color-text-inverse);border-color:transparent}
     .upload-btn{width:100%;display:inline-flex;align-items:center;justify-content:center;min-height:54px;border-radius:var(--radius-lg);background:var(--color-primary);color:var(--color-text-inverse);font-weight:700}
     .upload-btn input{display:none}
@@ -66,6 +68,14 @@
     .note-box{min-height:180px;white-space:pre-wrap;background:var(--color-surface-offset);border-radius:18px;border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);padding:var(--space-4);overflow:auto}
     input.field{width:100%}
     @media (max-width:1100px){.app{grid-template-columns:1fr}}
+
+    /* Hidden Export Container styling */
+    #exportContainer { position: absolute; left: -9999px; top: -9999px; width: 600px; padding: 32px; background: #fff; color: #111; font-family: 'Satoshi', sans-serif; border-radius: 24px; }
+    .export-card { background: #f9f8f5; border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 1px solid #e5e3db; display: flex; justify-content: space-between; align-items: center; }
+    .export-name { font-weight: 800; font-size: 1.25rem; margin-bottom: 4px; }
+    .export-role { font-size: 0.9rem; color: #67655f; font-weight: 500; }
+    .export-hours { font-weight: 900; font-size: 1.5rem; color: #01696f; background: #cedcd8; padding: 8px 16px; border-radius: 12px; }
+    .export-header { margin-bottom: 24px; border-bottom: 2px solid #e5e3db; padding-bottom: 16px; }
   </style>
 </head>
 <body>
@@ -100,7 +110,8 @@
       <div>
         <h2 style="font-size:var(--text-xl);line-height:1.05;font-weight:900">Schedule reviewer</h2>
       </div>
-      <div class="actions">
+      <div class="actions" style="display: flex; gap: 12px;">
+        <button id="exportBtn" class="btn primary" type="button" style="display: none;">Save as Image</button>
         <button id="themeBtn" class="btn" type="button">Dark mode</button>
       </div>
     </div>
@@ -127,9 +138,15 @@
     </section>
 
     <div class="panel section-pad">
-        <h3 style="font-size:var(--text-lg);font-weight:800;margin-bottom:var(--space-4)">Raw JSON Response</h3>
-        <p class="tiny muted" style="margin-bottom:var(--space-2)">See exactly what the AI extracted</p>
-        <div id="rawText" class="note-box" style="font-family:monospace; font-size: 13px;">No data yet.</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-4)">
+          <h3 style="font-size:var(--text-lg);font-weight:800">Weekly Total Hours</h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Employee</th><th>Primary Role</th><th>Total Hours</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
     </div>
 
     <div class="panel section-pad">
@@ -140,16 +157,15 @@
     </div>
 
     <div class="panel section-pad">
-        <h3 style="font-size:var(--text-lg);font-weight:800;margin-bottom:var(--space-4)">Shift table</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Employee</th><th>Role</th><th>Day</th><th>Time</th><th>Hours</th></tr></thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
+        <h3 style="font-size:var(--text-lg);font-weight:800;margin-bottom:var(--space-4)">Raw JSON Response</h3>
+        <p class="tiny muted" style="margin-bottom:var(--space-2)">See exactly what the AI extracted</p>
+        <div id="rawText" class="note-box" style="font-family:monospace; font-size: 13px;">No data yet.</div>
     </div>
   </main>
 </div>
+
+<!-- Hidden container used for exporting the image -->
+<div id="exportContainer"></div>
 
 <script>
 const state = {
@@ -161,7 +177,7 @@ const $ = id => document.getElementById(id);
 const els = {
   fileInput:$('fileInput'), dropzone:$('dropzone'), dropText:$('dropText'), previewWrap:$('previewWrap'), previewImage:$('previewImage'),
   statusBadge:$('statusBadge'), metricEmployees:$('metricEmployees'), metricShifts:$('metricShifts'), metricHours:$('metricHours'),
-  searchInput:$('searchInput'), days:$('days'), tableBody:$('tableBody'), rawText:$('rawText'), themeBtn:$('themeBtn'), apiKeyInput:$('apiKeyInput')
+  searchInput:$('searchInput'), days:$('days'), tableBody:$('tableBody'), rawText:$('rawText'), themeBtn:$('themeBtn'), apiKeyInput:$('apiKeyInput'), exportBtn:$('exportBtn'), exportContainer:$('exportContainer')
 };
 
 // --- API Logic ---
@@ -183,23 +199,15 @@ async function callGemini(base64Image, apiKey) {
     contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Image.split(',')[1] } }] }]
   };
 
-  // An array of aliases and models to try if the primary one is busy or missing
-  const modelsToTry = [
-    'gemini-flash-latest',
-    'gemini-3.5-flash',
-    'gemini-pro-latest',
-    'gemini-3.1-pro'
-  ];
-
+  const modelsToTry = ['gemini-flash-latest', 'gemini-3.5-flash', 'gemini-pro-latest', 'gemini-3.1-pro'];
   let lastError = "";
 
   for (const model of modelsToTry) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-    // Try each model up to 3 times in case of temporary 503 traffic spikes
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        updateStatus(`Connecting to ${model}... (Attempt ${attempt}/3)`);
+        updateStatus(`Connecting to ${model}... (${attempt}/3)`);
         
         const response = await fetch(url, {
           method: "POST", 
@@ -210,25 +218,17 @@ async function callGemini(base64Image, apiKey) {
         if (response.ok) {
           const data = await response.json();
           const textResponse = data.candidates[0].content.parts[0].text;
-          
-          // Safely extract just the JSON
           const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
-          if (!jsonMatch) throw new Error("Failed to extract JSON structure.");
-          
+          if (!jsonMatch) throw new Error("Failed to extract JSON.");
           return JSON.parse(jsonMatch[0]);
         }
 
-        // If 503 (Unavailable) or 429 (Too Many Requests), wait and retry
         if (response.status === 503 || response.status === 429 || response.status === 500) {
           lastError = `API Error: ${response.status} (Google Servers Busy)`;
-          console.warn(`[ShiftScope] ${model} returned ${response.status}. Retrying in ${attempt * 2}s...`);
-          // Exponential backoff (2s, then 4s)
           await new Promise(resolve => setTimeout(resolve, attempt * 2000));
           continue; 
         } else {
-          // If it's a 404 (Not Found) or 400 (Bad Request), don't retry. Move to the next model.
           lastError = `API Error: ${response.status} (${response.statusText})`;
-          console.warn(`[ShiftScope] ${model} failed with ${response.status}. Trying next model...`);
           break; 
         }
 
@@ -238,8 +238,6 @@ async function callGemini(base64Image, apiKey) {
       }
     }
   }
-
-  // If it loops through every model and all retries fail:
   throw new Error(`All Gemini models failed. Last issue: ${lastError}`);
 }
 
@@ -259,11 +257,23 @@ function render() {
     return !q || bag.includes(q);
   });
 
-  // Metrics
-  const totalHours = visible.reduce((sum,s)=>sum + Number(s.hours || 0),0);
-  els.metricEmployees.textContent = new Set(visible.map(s=>s.employee)).size;
+  // Calculate Total Hours per Employee
+  const employeeTotals = {};
+  visible.forEach(shift => {
+    if (!employeeTotals[shift.employee]) {
+        employeeTotals[shift.employee] = { role: shift.role, hours: 0 };
+    }
+    employeeTotals[shift.employee].hours += Number(shift.hours || 0);
+  });
+
+  // Sort employees by name alphabetically
+  const sortedEmployees = Object.keys(employeeTotals).sort();
+
+  // Update Metrics
+  const totalHours = sortedEmployees.reduce((sum, emp) => sum + employeeTotals[emp].hours, 0);
+  els.metricEmployees.textContent = sortedEmployees.length;
   els.metricShifts.textContent = visible.length;
-  els.metricHours.textContent = totalHours;
+  els.metricHours.textContent = totalHours.toFixed(1) + 'h';
 
   // Day Cards
   els.days.innerHTML = '';
@@ -272,7 +282,7 @@ function render() {
     if (!dayShifts.length) return;
     
     const card = document.createElement('div'); card.className = 'day-card';
-    card.innerHTML = `<div class="day-head"><strong style="font-size:1.1rem">${day}</strong><span class="muted">${dayShifts.reduce((a,b)=>a+b.hours,0)} hrs</span></div>`;
+    card.innerHTML = `<div class="day-head"><strong style="font-size:1.1rem">${day}</strong><span class="muted">${dayShifts.reduce((a,b)=>a+Number(b.hours),0)} hrs</span></div>`;
     const timeline = document.createElement('div'); timeline.className = 'timeline';
     
     dayShifts.forEach(shift => {
@@ -289,14 +299,63 @@ function render() {
     els.days.appendChild(card);
   });
 
-  // Table
-  els.tableBody.innerHTML = visible.length ? '' : '<tr><td colspan="5" style="text-align:center">No shifts</td></tr>';
-  visible.forEach(shift => {
+  // Total Hours Table
+  els.tableBody.innerHTML = sortedEmployees.length ? '' : '<tr><td colspan="3" style="text-align:center">No shifts</td></tr>';
+  sortedEmployees.forEach(emp => {
+    const data = employeeTotals[emp];
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${escapeHtml(shift.employee)}</td><td>${escapeHtml(shift.role)}</td><td>${escapeHtml(shift.day)}</td><td>${escapeHtml(shift.start)} - ${escapeHtml(shift.end)}</td><td>${shift.hours}</td>`;
+    tr.innerHTML = `<td><strong>${escapeHtml(emp)}</strong></td><td>${escapeHtml(data.role)}</td><td>${data.hours.toFixed(1)} hrs</td>`;
     els.tableBody.appendChild(tr);
   });
+
+  // Render Export Container (Hidden)
+  if (sortedEmployees.length > 0) {
+      els.exportBtn.style.display = 'block';
+      let exportHtml = `
+        <div class="export-header">
+            <h1 style="margin: 0; font-size: 2rem;">Weekly Hours Summary</h1>
+            <p style="margin: 4px 0 0 0; color: #67655f; font-size: 1.1rem;">${escapeHtml(state.title)} &bull; ${escapeHtml(state.meta)}</p>
+        </div>
+      `;
+      sortedEmployees.forEach(emp => {
+          exportHtml += `
+            <div class="export-card">
+                <div>
+                    <div class="export-name">${escapeHtml(emp)}</div>
+                    <div class="export-role">${escapeHtml(employeeTotals[emp].role)}</div>
+                </div>
+                <div class="export-hours">${employeeTotals[emp].hours.toFixed(1)} hrs</div>
+            </div>
+          `;
+      });
+      els.exportContainer.innerHTML = exportHtml;
+  } else {
+      els.exportBtn.style.display = 'none';
+  }
 }
+
+// Generate Image Export
+els.exportBtn.addEventListener('click', () => {
+    const originalText = els.exportBtn.textContent;
+    els.exportBtn.textContent = 'Generating...';
+    els.exportBtn.disabled = true;
+
+    domtoimage.toPng(els.exportContainer, { bgcolor: '#ffffff' })
+        .then(function (dataUrl) {
+            const link = document.createElement('a');
+            link.download = 'weekly-hours-summary.png';
+            link.href = dataUrl;
+            link.click();
+        })
+        .catch(function (error) {
+            console.error('Oops, something went wrong!', error);
+            alert("Could not generate image.");
+        })
+        .finally(function () {
+            els.exportBtn.textContent = originalText;
+            els.exportBtn.disabled = false;
+        });
+});
 
 function processImage(file) {
   if(!file || state.processing) return;
@@ -318,6 +377,8 @@ function processImage(file) {
       updateStatus("AI Parsing...");
       const result = await callGemini(base64, apiKey);
       state.shifts = result.shifts || [];
+      state.title = result.title || 'Schedule';
+      state.meta = result.meta || '';
       els.rawText.textContent = JSON.stringify(result, null, 2);
       updateStatus("Complete", "success");
     } catch(err) {
