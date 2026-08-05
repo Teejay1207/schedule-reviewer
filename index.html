@@ -78,9 +78,17 @@
 
     /* Custom styles for details summary toggle */
     details > summary { cursor: pointer; display: flex; align-items: center; user-select: none; outline: none; }
-    details > summary::-webkit-details-marker { display: none; } /* Hide default arrow in webkit */
+    details > summary::-webkit-details-marker { display: none; } 
     details > summary .toggle-icon { margin-left: auto; font-weight: bold; font-size: 1.2rem; transition: transform 0.2s; }
     details[open] > summary .toggle-icon { transform: rotate(45deg); }
+    
+    /* Error state block for rate limiting */
+    .error-block {
+        display: none; background: color-mix(in srgb, var(--color-error) 15%, var(--color-surface));
+        border: 1px solid var(--color-error); border-radius: var(--radius-lg);
+        padding: var(--space-4); margin-bottom: var(--space-4); color: var(--color-error);
+    }
+    .error-block.active { display: block; }
   </style>
 </head>
 <body>
@@ -125,6 +133,12 @@
       </div>
     </div>
 
+    <!-- Rate Limit Error UI -->
+    <div id="errorBlock" class="error-block">
+        <strong style="display:block;font-size:var(--text-lg);margin-bottom:4px;">Rate Limit Exceeded</strong>
+        <span>You have made too many requests in a short time. Please wait 60 seconds before uploading again.</span>
+    </div>
+
     <section class="hero">
       <div class="panel section-pad">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4)">
@@ -144,7 +158,6 @@
     </section>
 
     <section class="toolbar">
-      <!-- Search input updated placeholder to hint at multiple searching -->
       <input id="searchInput" class="field" type="search" placeholder="Filter employee, role, or day (use commas for multiple)" />
     </section>
 
@@ -167,7 +180,6 @@
         <div id="days" class="days"></div>
     </div>
 
-    <!-- Raw Data Section wrapped in a native HTML5 <details> element so it's collapsible -->
     <details class="panel section-pad">
         <summary>
             <h3 style="font-size:var(--text-lg);font-weight:800; display: inline;">Raw JSON Response</h3>
@@ -182,7 +194,6 @@
   </main>
 </div>
 
-<!-- Hidden container used for exporting the image -->
 <div id="exportContainer"></div>
 
 <script>
@@ -195,10 +206,9 @@ const $ = id => document.getElementById(id);
 const els = {
   fileInput:$('fileInput'), dropzone:$('dropzone'), dropText:$('dropText'), previewWrap:$('previewWrap'), previewImage:$('previewImage'),
   statusBadge:$('statusBadge'), metricEmployees:$('metricEmployees'), metricShifts:$('metricShifts'), metricHours:$('metricHours'),
-  searchInput:$('searchInput'), days:$('days'), tableBody:$('tableBody'), rawText:$('rawText'), themeBtn:$('themeBtn'), apiKeyInput:$('apiKeyInput'), exportBtn:$('exportBtn'), exportContainer:$('exportContainer'), clearBtn:$('clearBtn')
+  searchInput:$('searchInput'), days:$('days'), tableBody:$('tableBody'), rawText:$('rawText'), themeBtn:$('themeBtn'), apiKeyInput:$('apiKeyInput'), exportBtn:$('exportBtn'), exportContainer:$('exportContainer'), clearBtn:$('clearBtn'), errorBlock:$('errorBlock')
 };
 
-// --- API Logic ---
 async function callGemini(base64Image, apiKey) {
   const prompt = `You are an expert data extraction assistant. Analyze this work schedule image. 
   Extract the store title, dates, and all shifts.
@@ -239,6 +249,11 @@ async function callGemini(base64Image, apiKey) {
           body: JSON.stringify(payload) 
         });
 
+        // 429 means Quota/Rate Limit Exceeded. Hard stop, no retries.
+        if (response.status === 429) {
+            throw new Error("RATE_LIMIT_EXCEEDED");
+        }
+
         if (response.ok) {
           const data = await response.json();
           const textResponse = data.candidates[0].content.parts[0].text;
@@ -247,7 +262,7 @@ async function callGemini(base64Image, apiKey) {
           return JSON.parse(jsonMatch[0]);
         }
 
-        if (response.status === 503 || response.status === 429 || response.status === 500) {
+        if (response.status === 503 || response.status === 500) {
           lastError = `API Error: ${response.status} (Google Servers Busy)`;
           await new Promise(resolve => setTimeout(resolve, attempt * 2000));
           continue; 
@@ -257,6 +272,9 @@ async function callGemini(base64Image, apiKey) {
         }
 
       } catch (err) {
+        if (err.message === "RATE_LIMIT_EXCEEDED") {
+            throw err; // Pass this up to the main process immediately
+        }
         lastError = err.message;
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
@@ -265,7 +283,6 @@ async function callGemini(base64Image, apiKey) {
   throw new Error(`All Gemini models failed. Last issue: ${lastError}`);
 }
 
-// --- UI Logic ---
 function escapeHtml(v){ return String(v ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function roleColor(role){ return state.roleColors[role] || '#7a7974'; }
 
@@ -275,23 +292,17 @@ function updateStatus(text, type='idle') {
 }
 
 function render() {
-  // New Multi-Term Search Logic
   const rawSearch = state.search.trim().toLowerCase();
-  // Split by commas, trim whitespace, and ignore empty strings
   const searchTerms = rawSearch.split(',').map(t => t.trim()).filter(Boolean);
 
   const visible = state.shifts.filter(s => {
-    if (searchTerms.length === 0) return true; // Show all if no search query
-    
+    if (searchTerms.length === 0) return true;
     const bag = `${s.employee} ${s.role} ${s.day}`.toLowerCase();
-    // Use .some() so it acts as an OR filter - matches if any of the comma-separated terms match
     return searchTerms.some(term => bag.includes(term));
   });
 
-  // Show/Hide Clear Button
   els.clearBtn.style.display = state.shifts.length > 0 ? 'block' : 'none';
 
-  // Calculate Total Hours per Employee
   const employeeTotals = {};
   visible.forEach(shift => {
     if (!employeeTotals[shift.employee]) {
@@ -301,14 +312,12 @@ function render() {
   });
 
   const sortedEmployees = Object.keys(employeeTotals).sort();
-
-  // Update Metrics
   const totalHours = sortedEmployees.reduce((sum, emp) => sum + employeeTotals[emp].hours, 0);
+  
   els.metricEmployees.textContent = sortedEmployees.length;
   els.metricShifts.textContent = visible.length;
   els.metricHours.textContent = totalHours.toFixed(1) + 'h';
 
-  // Day Cards
   els.days.innerHTML = '';
   daysOfWeek.forEach(day => {
     const dayShifts = visible.filter(s => s.day === day);
@@ -332,7 +341,6 @@ function render() {
     els.days.appendChild(card);
   });
 
-  // Total Hours Table
   els.tableBody.innerHTML = sortedEmployees.length ? '' : '<tr><td colspan="3" style="text-align:center">No shifts</td></tr>';
   sortedEmployees.forEach(emp => {
     const data = employeeTotals[emp];
@@ -341,7 +349,6 @@ function render() {
     els.tableBody.appendChild(tr);
   });
 
-  // Render Export Container
   if (sortedEmployees.length > 0) {
       els.exportBtn.style.display = 'block';
       let exportHtml = `
@@ -367,7 +374,6 @@ function render() {
   }
 }
 
-// Generate Image Export
 els.exportBtn.addEventListener('click', () => {
     const originalText = els.exportBtn.textContent;
     els.exportBtn.textContent = 'Generating...';
@@ -390,7 +396,6 @@ els.exportBtn.addEventListener('click', () => {
         });
 });
 
-// Process Image
 function processImage(file) {
   if(!file || state.processing) return;
   const apiKey = els.apiKeyInput.value.trim();
@@ -398,6 +403,7 @@ function processImage(file) {
   
   localStorage.setItem('shiftscope_api_key', apiKey);
   state.processing = true;
+  els.errorBlock.classList.remove('active'); // Clear previous errors
   updateStatus("Reading image...");
   
   const reader = new FileReader();
@@ -416,7 +422,6 @@ function processImage(file) {
       state.meta = result.meta || '';
       els.rawText.textContent = JSON.stringify(result, null, 2);
       
-      // Save to localStorage so it survives refreshes
       localStorage.setItem('shiftscope_data', JSON.stringify({
          title: state.title,
          meta: state.meta,
@@ -426,8 +431,13 @@ function processImage(file) {
       
       updateStatus("Complete", "success");
     } catch(err) {
-      updateStatus("Parse failed", "error");
-      els.rawText.textContent = err.message;
+      if (err.message === "RATE_LIMIT_EXCEEDED") {
+          els.errorBlock.classList.add('active');
+          updateStatus("Rate Limited", "error");
+      } else {
+          updateStatus("Parse failed", "error");
+          els.rawText.textContent = err.message;
+      }
     } finally {
       state.processing = false;
       render();
@@ -436,7 +446,6 @@ function processImage(file) {
   reader.readAsDataURL(file);
 }
 
-// Clear Data
 els.clearBtn.addEventListener('click', () => {
    if(confirm('Clear the saved schedule data?')) {
        localStorage.removeItem('shiftscope_data');
@@ -447,15 +456,14 @@ els.clearBtn.addEventListener('click', () => {
        els.previewWrap.classList.remove('active');
        els.dropText.style.display = 'block';
        els.dropText.innerHTML = '<strong style="display:block;font-size:var(--text-lg)">Select an image</strong><span class="tiny muted">No schedule loaded</span>';
+       els.errorBlock.classList.remove('active');
        updateStatus("Ready");
        render();
    }
 });
 
-// Initialization
 els.apiKeyInput.value = localStorage.getItem('shiftscope_api_key') || '';
 
-// Load saved schedule if it exists
 const savedData = localStorage.getItem('shiftscope_data');
 if (savedData) {
     try {
