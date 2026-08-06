@@ -204,7 +204,7 @@ async function callGemini(base64Image, apiKey) {
     contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Image.split(',')[1] } }] }]
   };
 
-  const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-pro'];
+  const modelsToTry = ['gemini-3.1-flash-lite', 'gemini-3.5-flash', 'gemini-3.6-flash'];
   let lastError = "";
 
   for (const model of modelsToTry) {
